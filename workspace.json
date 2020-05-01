@@ -39,6 +39,86 @@
           }
         }
       }
+    },
+    "example-app": {
+      "root": "apps/example-app",
+      "sourceRoot": "apps/example-app/src",
+      "projectType": "application",
+      "schematics": {},
+      "architect": {
+        "build": {
+          "builder": "@nrwl/web:build",
+          "options": {
+            "outputPath": "dist/apps/example-app",
+            "index": "apps/example-app/src/index.html",
+            "main": "apps/example-app/src/main.tsx",
+            "polyfills": "apps/example-app/src/polyfills.ts",
+            "tsConfig": "apps/example-app/tsconfig.app.json",
+            "assets": [
+              "apps/example-app/src/favicon.ico",
+              "apps/example-app/src/assets"
+            ],
+            "styles": ["apps/example-app/src/styles.css"],
+            "scripts": [],
+            "webpackConfig": "@nrwl/react/plugins/webpack"
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "apps/example-app/src/environments/environment.ts",
+                  "with": "apps/example-app/src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@nrwl/web:dev-server",
+          "options": {
+            "buildTarget": "example-app:build"
+          },
+          "configurations": {
+            "production": {
+              "buildTarget": "example-app:build:production"
+            }
+          }
+        },
+        "lint": {
+          "builder": "@nrwl/linter:lint",
+          "options": {
+            "linter": "eslint",
+            "config": "apps/example-app/.eslintrc",
+            "tsConfig": [
+              "apps/example-app/tsconfig.app.json",
+              "apps/example-app/tsconfig.spec.json"
+            ],
+            "exclude": ["**/node_modules/**", "!apps/example-app/**"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "apps/example-app/jest.config.js",
+            "tsConfig": "apps/example-app/tsconfig.spec.json",
+            "passWithNoTests": true
+          }
+        }
+      }
     }
   },
   "cli": {

@@ -23,4 +23,13 @@ export type Dispatcher = (action: Action) => void;
  */
 export type GetState<T> = () => T;
 
+export type Reshaper<T> = {
+  addHandlers: (handlers: ActionHandler<T>[]) => Reshaper<T>;
+  addOnChange: (onChange: OnChange<T>) => Reshaper<T>;
+  dispatch: Dispatcher;
+  removeHandlers: (handlers: ActionHandler<T>[]) => Reshaper<T>;
+  removeOnChange: (onChange: OnChange<T>) => Reshaper<T>;
+  setGetState: (getter: GetState<T>) => Reshaper<T>;
+};
+
 export type OnChange<T> = (state: T) => void;

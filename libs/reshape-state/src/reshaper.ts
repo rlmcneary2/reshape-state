@@ -1,8 +1,9 @@
 import { queue } from "./task-queue";
-import { GetState, ActionHandler, OnChange, Dispatcher, Action } from "./types";
+import { Action, ActionHandler, GetState, OnChange, Reshaper } from "./types";
 
 /**
- * Create a Reshaper that will process state by actions and then provide the new state via the OnChange functions.
+ * Create a Reshaper that will process state by actions and then provide the new
+ * state via the OnChange functions.
  * @param getState Returns the state to be updated by the ActionHandlers.
  * @returns A Reshaper object.
  */
@@ -85,12 +86,3 @@ export function create<T>(): Readonly<Reshaper<T>> {
     }
   });
 }
-
-export type Reshaper<T> = {
-  addHandlers: (handlers: ActionHandler<T>[]) => Reshaper<T>;
-  addOnChange: (onChange: OnChange<T>) => Reshaper<T>;
-  dispatch: Dispatcher;
-  removeHandlers: (handlers: ActionHandler<T>[]) => Reshaper<T>;
-  removeOnChange: (onChange: OnChange<T>) => Reshaper<T>;
-  setGetState: (getter: GetState<T>) => Reshaper<T>;
-};
