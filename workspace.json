@@ -8,8 +8,10 @@
       "schematics": {},
       "architect": {
         "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
+          "builder": "@nrwl/linter:lint",
           "options": {
+            "linter": "eslint",
+            "config": "libs/reshape-state/.eslintrc",
             "tsConfig": [
               "libs/reshape-state/tsconfig.lib.json",
               "libs/reshape-state/tsconfig.spec.json"
@@ -17,14 +19,15 @@
             "exclude": ["**/node_modules/**", "!libs/reshape-state/**"]
           }
         },
-        "package": {
-          "builder": "@angular-devkit/build-angular:tslint",
+        "build": {
+          "builder": "@nrwl/web:package",
           "options": {
-            "tsConfig": [
-              "libs/reshape-state/tsconfig.lib.json",
-              "libs/reshape-state/tsconfig.spec.json"
-            ],
-            "exclude": ["**/node_modules/**", "!libs/reshape-state/**"]
+            "outputPath": "dist/libs/reshape-state",
+            "tsConfig": "libs/reshape-state/tsconfig.lib.json",
+            "project": "libs/reshape-state/package.json",
+            "entryFile": "libs/reshape-state/src/index.ts",
+            "babelConfig": "@nrwl/react/plugins/bundle-babel",
+            "rollupConfig": "@nrwl/react/plugins/bundle-rollup"
           }
         },
         "test": {
@@ -39,7 +42,7 @@
     }
   },
   "cli": {
-    "defaultCollection": "@nrwl/web"
+    "defaultCollection": "@nrwl/react"
   },
   "schematics": {
     "@nrwl/workspace": {
@@ -54,9 +57,15 @@
     },
     "@nrwl/react": {
       "application": {
-        "linter": "eslint"
+        "style": "css",
+        "linter": "eslint",
+        "babel": true
+      },
+      "component": {
+        "style": "css"
       },
       "library": {
+        "style": "css",
         "linter": "eslint"
       }
     },
@@ -96,5 +105,6 @@
         "linter": "eslint"
       }
     }
-  }
+  },
+  "defaultProject": "reshape-state"
 }
