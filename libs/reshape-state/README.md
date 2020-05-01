@@ -10,7 +10,9 @@ yarn add reshape-state
 
 ## Usage
 
-Create a reshaper.
+### Create
+
+Create a reshaper that will manage state change actions, manipulating state, and notifying subscribers when it changes.
 
 ```ts
 import { create } from "reshape-state";
@@ -18,7 +20,17 @@ import { create } from "reshape-state";
 const reshaper = create<State>();
 ```
 
-Add handler functions to handle actions.
+### Listen for changes
+
+Add an OnChange callback to be notified when state changes.
+
+```ts
+reshaper.addOnChange(state => console.log("state changed=", state));
+```
+
+### Update state
+
+Add handler functions to change state.
 
 ```ts
 reshaper.addHandlers([
@@ -41,7 +53,7 @@ reshaper.addHandlers([
 ]);
 ```
 
-The handler functions have to be synchronous, but they can start asynchronous code and dispatch an action when they finish.
+The handler functions must be synchronous and return at least a state object but they can start asynchronous code and dispatch an action when they finish (i.e they can have "side-effects"). In fact handlers don't have to react to an action, they can do something based on the current shape of the state. In the example below once state contains a `name` the address associated with that name will be fetched. The idea is that changing one piece of state can cause another one to be updated without requiring an intermediate action.
 
 ```ts
 reshaper.addHandlers([
@@ -64,4 +76,4 @@ reshaper.addHandlers([
 ]);
 ```
 
-You may have noticed state can be mutated or not, it's up to you. State change is indicated by the second element in the return array not by object equality.
+You may have noticed state can be mutated - or not - it's up to you. State change is indicated by the optional second element in the return array not by object equality. If the second element is not provided the default is that state has not changed.
