@@ -17,9 +17,8 @@ export function create<T>(): Readonly<Reshaper<T>> {
   };
 
   (storeInternal as any).dispatch = function(action: Action) {
-    console.log("dispatch: action=", action);
     addTask(() => {
-      let nextState = getState();
+      let nextState = getState ? getState() : undefined;
       let stateChanged = false;
       for (const h of storeInternal.actionHandlers) {
         const [handlerState, changed = false] = h(

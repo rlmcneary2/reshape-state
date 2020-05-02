@@ -1,3 +1,7 @@
+/**
+ * Create a queue.
+ * @returns The "addTask" function that can be used to add tasks to the queue.
+ */
 export function queue<T>() {
   const taskQueue = new Set<() => void>();
   let active = false;
@@ -10,14 +14,10 @@ export function queue<T>() {
       return;
     }
 
-    const task: () => Promise<void> = taskQueue.values().next().value;
-    taskQueue.delete(task);
+    const queudItem: () => Promise<void> = taskQueue.values().next().value;
+    taskQueue.delete(queudItem);
 
-    try {
-      await task();
-    } catch (err) {
-      console.error("Error processing task.", err);
-    }
+    await queudItem();
 
     if (taskQueue.size < 1) {
       active = false;
@@ -28,29 +28,32 @@ export function queue<T>() {
   }
 
   return function<T>(task: Task<T>): TaskResult<T> {
-    let resolve: (value?: T | Promise<T>) => void;
-    let reject: (reason?: any) => void;
-    const result = new Promise<T>((res, rej) => {
-      resolve = res;
-      reject = rej;
-    });
+    let resolveTask: (value?: T | Promise<T>) => void;
+    const result = new Promise<T>(res => (resolveTask = res));
+    let canceled = false;
 
-    const queuedItem = () => {
+    const queuedItem = async () => {
+      let r: any;
       try {
-        resolve(task());
+        r = await Promise.resolve(task());
       } catch (err) {
-        reject(err);
+        console.error("Error processing task.", err);
       }
+
+      !canceled && resolveTask(r);
     };
 
     taskQueue.add(queuedItem);
 
-    setTimeout(() => !active && process(), 0);
+    setTimeout(() => {
+      !active && process();
+    }, 0);
 
     return {
       cancel: () => {
+        canceled = true;
         taskQueue.delete(queuedItem);
-        resolve();
+        resolveTask();
       },
       result
     };

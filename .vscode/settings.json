@@ -1,0 +1,7 @@
+{
+  "prettier.arrowParens": "avoid",
+  "prettier.packageManager": "yarn",
+  "prettier.trailingComma": "none",
+  "javascript.preferences.quoteStyle": "double",
+  "typescript.preferences.quoteStyle": "double"
+}

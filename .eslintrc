@@ -7,12 +7,10 @@
     "project": "./tsconfig.json"
   },
   "ignorePatterns": ["**/*"],
-  "plugins": ["@typescript-eslint", "@nrwl/nx"],
+  "plugins": ["prettier", "@typescript-eslint", "@nrwl/nx"],
   "extends": [
-    "eslint:recommended",
-    "plugin:@typescript-eslint/eslint-recommended",
-    "plugin:@typescript-eslint/recommended",
     "prettier",
+    "plugin:prettier/recommended",
     "prettier/@typescript-eslint"
   ],
   "rules": {
