@@ -1,22 +1,6 @@
 {
   "author": "Richard L. McNeary II",
-  "browser": "reshape-state.umd.js",
-  "bugs": "https://github.com/rlmcneary2/reshape-state/issues",
-  "description": "A small state management library. Use a reshaper to manage the acquisition of data for a state object from multiple asynchronous sources.",
-  "homepage": "https://github.com/rlmcneary2/reshape-state",
-  "keywords": [
-    "state",
-    "state management",
-    "react"
-  ],
   "license": "MIT",
-  "module": "reshape-state.esm.js",
-  "name": "reshape-state",
-  "version": "1.0.0",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/rlmcneary2/reshape-state.git"
-  },
   "scripts": {
     "nx": "nx",
     "start": "nx serve",
