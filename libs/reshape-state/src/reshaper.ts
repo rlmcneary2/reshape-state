@@ -21,11 +21,15 @@ export function create<T>(): Readonly<Reshaper<T>> {
       let nextState = getState ? getState() : undefined;
       let stateChanged = false;
       for (const h of storeInternal.actionHandlers) {
-        const [handlerState, changed = false] = h(
-          nextState,
-          action,
-          (storeInternal as any).dispatch
-        );
+        const result = h(nextState, action, (storeInternal as any).dispatch);
+
+        if (!result || !Array.isArray(result)) {
+          throw Error(
+            "The ActionHandler did not return an array as its result."
+          );
+        }
+
+        const [handlerState, changed = false] = result;
         nextState = changed ? handlerState : nextState;
         stateChanged = changed || stateChanged;
       }
