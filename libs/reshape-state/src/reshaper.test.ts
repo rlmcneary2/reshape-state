@@ -85,4 +85,42 @@ describe("reshaper", () => {
     expect(handleChange).toHaveBeenCalledTimes(1);
     expect(handleChange).toHaveBeenCalledWith({ fiz: "baz", foo: "bar" });
   });
+
+  it("accepts multiple actions", async () => {
+    const reshaper = create<any>();
+
+    const initialState = { foo: "bar" };
+    const getState = jest.fn(() => initialState);
+    reshaper.setGetState(getState);
+
+    const handler = jest.fn((state, action) => [
+      { ...state, ...action.payload },
+      true
+    ]);
+    reshaper.addHandlers([handler as any]);
+
+    const handleChange = jest.fn();
+    reshaper.addOnChange(handleChange);
+
+    const wait = new Promise(resolve => {
+      reshaper.addOnChange(() => {
+        resolve();
+      });
+    });
+
+    reshaper.dispatch(
+      { id: "update", payload: { fiz: "baz" } },
+      { id: "update", payload: { param: "two" } }
+    );
+
+    await wait;
+
+    expect(handler).toHaveBeenCalledTimes(2);
+    expect(handleChange).toHaveBeenCalledTimes(1);
+    expect(handleChange).toHaveBeenCalledWith({
+      fiz: "baz",
+      foo: "bar",
+      param: "two"
+    });
+  });
 });

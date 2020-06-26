@@ -16,7 +16,10 @@ export type ActionHandler<T, U = any> = (
   dispatch: Dispatcher
 ) => [T, boolean?];
 
-export type Dispatcher = (action: Action) => void;
+/**
+ * The dispatcher will accept one or more actions as parameters. Each action is processed in sequence starting with the leftmost parameter.
+ */
+export type Dispatcher = (...actions: Action[]) => void;
 
 /**
  * Returns a state object.

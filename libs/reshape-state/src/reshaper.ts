@@ -1,5 +1,12 @@
 import { queue } from "./task-queue";
-import { Action, ActionHandler, GetState, OnChange, Reshaper } from "./types";
+import {
+  Action,
+  ActionHandler,
+  Dispatcher,
+  GetState,
+  OnChange,
+  Reshaper
+} from "./types";
 
 /**
  * Create a Reshaper that will process state by actions and then provide the new
@@ -16,22 +23,26 @@ export function create<T>(): Readonly<Reshaper<T>> {
     onChangeHandlers: new Set<OnChange<T>>()
   };
 
-  (storeInternal as any).dispatch = function(action: Action) {
+  ((storeInternal as any).dispatch as Dispatcher) = function(
+    ...actions: Action[]
+  ) {
     addTask(() => {
       let nextState = getState ? getState() : undefined;
       let stateChanged = false;
-      for (const h of storeInternal.actionHandlers) {
-        const result = h(nextState, action, (storeInternal as any).dispatch);
+      for (const action of actions) {
+        for (const h of storeInternal.actionHandlers) {
+          const result = h(nextState, action, (storeInternal as any).dispatch);
 
-        if (!result || !Array.isArray(result)) {
-          throw Error(
-            "The ActionHandler did not return an array as its result."
-          );
+          if (!result || !Array.isArray(result)) {
+            throw Error(
+              "The ActionHandler did not return an array as its result."
+            );
+          }
+
+          const [handlerState, changed = false] = result;
+          nextState = changed ? handlerState : nextState;
+          stateChanged = changed || stateChanged;
         }
-
-        const [handlerState, changed = false] = result;
-        nextState = changed ? handlerState : nextState;
-        stateChanged = changed || stateChanged;
       }
 
       if (stateChanged) {
