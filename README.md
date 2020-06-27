@@ -6,12 +6,8 @@ Also an [example React application](apps/example-app/src/main.tsx).
 
 ## Publish
 
-The `build` steps will generate publishable lib output to the `dist` directory. Use the np command in the workspace root directory (same as this file):
+The `build` steps will generate publishable lib output to the `dist` directory. Use the local np command from the workspace root directory (same as this file).
 
-```bash
-yarn build
-```
-
-```bash
-./node_modules/.bin/np
-```
+- Delete the `dist` directory.
+- Build the library: `yarn build`
+- Publish with np, do **not** use global np, the local package in `node_modules` must be used: `./node_modules/.bin/np`

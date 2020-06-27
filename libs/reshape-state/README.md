@@ -37,10 +37,7 @@ parameters. The action has one required property `id` which can be a string or
 number. The optional `payload` contains information used to update state.
 
 ```ts
-reshaper.dispatch(
-  { id: "name" payload: "Alice" },
-  { id: "age", payload: 30 }
-);
+reshaper.dispatch({ id: "name", payload: "Alice" }, { id: "age", payload: 30 });
 ```
 
 ### Update state
