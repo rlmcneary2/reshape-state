@@ -33,11 +33,14 @@ reshaper.addOnChange(state => console.log("state changed=", state));
 ### Dispatch actions
 
 When state needs to be changed use dispatch with one or more actions as
-parameters. The action has one required property `id` which can be a sting or
+parameters. The action has one required property `id` which can be a string or
 number. The optional `payload` contains information used to update state.
 
 ```ts
-reshaper.dispatch({ id: "name" payload: "Alice" }), { id: "age", payload: 30 };
+reshaper.dispatch(
+  { id: "name" payload: "Alice" },
+  { id: "age", payload: 30 }
+);
 ```
 
 ### Update state
@@ -99,3 +102,13 @@ You may have noticed state can be mutated - or not - it's up to you. State
 change is indicated by the optional second element in the return array not by
 object equality. If the second element is not provided the default is that state
 has not changed.
+
+### Remove listeners and handlers
+
+If the reshaper is no longer needed the OnChange callback and handlers should be
+removed.
+
+```ts
+reshaper.removeHandlers(handlers);
+reshaper.removeOnChange(handleChange);
+```
