@@ -6,9 +6,9 @@
       "dependencies": "*",
       "devDependencies": "*"
     },
-    "tsconfig.json": "*",
     "tslint.json": "*",
-    "nx.json": "*"
+    "nx.json": "*",
+    "tsconfig.base.json": "*"
   },
   "tasksRunnerOptions": {
     "default": {
@@ -25,5 +25,8 @@
     "example-app": {
       "tags": []
     }
+  },
+  "affected": {
+    "defaultBase": "master"
   }
 }
