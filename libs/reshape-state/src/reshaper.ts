@@ -5,7 +5,7 @@ import {
   Dispatcher,
   GetState,
   OnChange,
-  Reshaper
+  Reshaper,
 } from "./types";
 
 /**
@@ -20,10 +20,10 @@ export function create<T>(): Readonly<Reshaper<T>> {
 
   const storeInternal = {
     actionHandlers: new Set<ActionHandler<T>>(),
-    onChangeHandlers: new Set<OnChange<T>>()
+    onChangeHandlers: new Set<OnChange<T>>(),
   };
 
-  ((storeInternal as any).dispatch as Dispatcher) = function(
+  ((storeInternal as any).dispatch as Dispatcher) = function (
     ...actions: Action[]
   ) {
     addTask(() => {
@@ -54,7 +54,7 @@ export function create<T>(): Readonly<Reshaper<T>> {
   };
 
   return Object.freeze({
-    addHandlers: function(handlers: ActionHandler<T>[]) {
+    addHandlers: function (handlers: ActionHandler<T>[]) {
       handlers.forEach(
         h =>
           !storeInternal.actionHandlers.has(h) &&
@@ -67,7 +67,7 @@ export function create<T>(): Readonly<Reshaper<T>> {
       return this;
     },
 
-    addOnChange: function(onChange: OnChange<T>) {
+    addOnChange: function (onChange: OnChange<T>) {
       !storeInternal.onChangeHandlers.has(onChange) &&
         storeInternal.onChangeHandlers.add(onChange);
       return this;
@@ -75,7 +75,7 @@ export function create<T>(): Readonly<Reshaper<T>> {
 
     dispatch: (storeInternal as any).dispatch,
 
-    removeHandlers: function(handlers: ActionHandler<T>[]) {
+    removeHandlers: function (handlers: ActionHandler<T>[]) {
       handlers.forEach(
         h =>
           storeInternal.actionHandlers.has(h) &&
@@ -88,15 +88,15 @@ export function create<T>(): Readonly<Reshaper<T>> {
       return this;
     },
 
-    removeOnChange: function(onChange: OnChange<T>) {
+    removeOnChange: function (onChange: OnChange<T>) {
       storeInternal.onChangeHandlers.has(onChange) &&
         storeInternal.onChangeHandlers.delete(onChange);
       return this;
     },
 
-    setGetState: function(getter: GetState<T>) {
+    setGetState: function (getter: GetState<T>) {
       getState = getter;
       return this;
-    }
+    },
   });
 }

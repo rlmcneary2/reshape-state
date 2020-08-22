@@ -42,7 +42,7 @@ describe("reshaper", () => {
         () => {
           setTimeout(() => resolve(), 1);
           return [state];
-        }
+        },
       ]);
     });
 
@@ -63,7 +63,7 @@ describe("reshaper", () => {
 
     const handler = jest.fn((state, action) => [
       { ...state, ...action.payload },
-      true
+      true,
     ]);
     reshaper.addHandlers([handler as any]);
 
@@ -95,7 +95,7 @@ describe("reshaper", () => {
 
     const handler = jest.fn((state, action) => [
       { ...state, ...action.payload },
-      true
+      true,
     ]);
     reshaper.addHandlers([handler as any]);
 
@@ -120,7 +120,7 @@ describe("reshaper", () => {
     expect(handleChange).toHaveBeenCalledWith({
       fiz: "baz",
       foo: "bar",
-      param: "two"
+      param: "two",
     });
   });
 });

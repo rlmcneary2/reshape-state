@@ -27,7 +27,7 @@ export function queue<T>() {
     setTimeout(() => process(), 0);
   }
 
-  return function<T>(task: Task<T>): TaskResult<T> {
+  return function <T>(task: Task<T>): TaskResult<T> {
     let resolveTask: (value?: T | Promise<T>) => void;
     const result = new Promise<T>(res => (resolveTask = res));
     let canceled = false;
@@ -55,7 +55,7 @@ export function queue<T>() {
         taskQueue.delete(queuedItem);
         resolveTask();
       },
-      result
+      result,
     };
   };
 }
