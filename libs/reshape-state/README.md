@@ -32,9 +32,10 @@ reshaper.addOnChange(state => console.log("state changed=", state));
 
 ### Dispatch actions
 
-When state needs to be changed use dispatch with one or more actions as
-parameters. The action has one required property `id` which can be a string or
-number. The optional `payload` contains information used to update state.
+When state needs to be changed use dispatch with one or more tasks as
+parameters. Any Action tasks have one required property `id` which can be a
+string or number; the optional `payload` contains information used to update
+state. [Inline handlers can also be dispatched](#dispatch-inline-handlers).
 
 ```ts
 reshaper.dispatch({ id: "name", payload: "Alice" }, { id: "age", payload: 30 });
@@ -66,12 +67,12 @@ reshaper.addHandlers([
 ```
 
 The handler functions must be synchronous and return at least a state object but
-they can start asynchronous code and dispatch an action when they finish (i.e
-they can have "side-effects"). In fact handlers don't have to react to an
-action, they can do something based on the current shape of the state. In the
-example below once state contains a `name` the address associated with that name
-will be fetched. The idea is that changing one piece of state can cause another
-one to be updated without requiring an intermediate action.
+they can start asynchronous code and dispatch a task when they finish (i.e they
+can have "side-effects"). In fact handlers don't have to react to an action,
+they can do something based on the current shape of the state. In the example
+below once state contains a `name` the address associated with that name will be
+fetched. The idea is that changing one piece of state can cause another one to
+be updated without requiring an intermediate action.
 
 ```ts
 reshaper.addHandlers([
@@ -103,7 +104,7 @@ has not changed.
 ### Dispatch inline handlers
 
 Typically after starting asynchronous code in a handler the convention is to
-dispatch another action which will inform all handlers of the asynchronous
+dispatch another Action which will inform all handlers of the asynchronous
 code's completion and one or more of the handlers will use the action to update
 state. Sometimes there is no no need to inform all the handlers about the
 asynchronous result but simply to update state with the asynchroouse result. In
