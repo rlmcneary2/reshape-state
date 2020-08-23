@@ -10,4 +10,5 @@ The `build` steps will generate publishable lib output to the `dist` directory. 
 
 - Delete the `dist` directory.
 - Build the library: `yarn build`
+- Edit the dist/lib/reshape-state/package.json file to have the version number you will choose when running `np`.
 - Publish with np, do **not** use global np, the local package in `node_modules` must be used: `./node_modules/.bin/np`
