@@ -123,4 +123,42 @@ describe("reshaper", () => {
       param: "two",
     });
   });
+
+  it("accepts inline handlers", async () => {
+    const reshaper = create<any>();
+
+    const initialState = { foo: "bar" };
+    const getState = jest.fn(() => initialState);
+    reshaper.setGetState(getState);
+
+    const handler = jest.fn((state, action) => [
+      { ...state, ...action.payload },
+      true,
+    ]);
+    reshaper.addHandlers([handler as any]);
+
+    const handleChange = jest.fn();
+    reshaper.addOnChange(handleChange);
+
+    const wait = new Promise(resolve => {
+      reshaper.addOnChange(() => {
+        resolve();
+      });
+    });
+
+    const inlineHandler = jest.fn(state => [{ ...state, fiz: "baz" }, true]);
+
+    reshaper.dispatch(inlineHandler as any);
+
+    await wait;
+
+    expect(handler).toHaveBeenCalledTimes(0);
+    expect(inlineHandler).toHaveBeenCalledTimes(1);
+    expect(inlineHandler).toHaveBeenCalledWith(initialState);
+    expect(handleChange).toHaveBeenCalledTimes(1);
+    expect(handleChange).toHaveBeenCalledWith({
+      fiz: "baz",
+      foo: "bar",
+    });
+  });
 });
