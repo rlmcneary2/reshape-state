@@ -42,7 +42,6 @@
     "dep-graph": "nx dep-graph",
     "help": "nx help"
   },
-  "dependencies": {},
   "devDependencies": {
     "@nrwl/cypress": "10.1.0",
     "@nrwl/eslint-plugin-nx": "10.1.0",

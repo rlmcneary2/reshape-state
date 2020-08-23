@@ -24,6 +24,10 @@
 !.vscode/launch.json
 !.vscode/extensions.json
 
+# Yarn 2.X
+/.pnp.js
+/.yarn*
+
 # misc
 /.sass-cache
 /connect.lock
