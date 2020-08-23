@@ -1,6 +1,7 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
+    "downlevelIteration": true,
     "types": ["node", "jest"]
   },
   "include": [],
