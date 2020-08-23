@@ -4,6 +4,7 @@ import {
   ActionHandler,
   Dispatcher,
   GetState,
+  InlineHandler,
   OnChange,
   Reshaper,
 } from "./types";
@@ -24,24 +25,28 @@ export function create<T>(): Readonly<Reshaper<T>> {
   };
 
   ((storeInternal as any).dispatch as Dispatcher) = function (
-    ...actions: Action[]
+    ...tasks: (Action | InlineHandler)[]
   ) {
     addTask(() => {
       let nextState = getState ? getState() : undefined;
       let stateChanged = false;
-      for (const action of actions) {
-        for (const h of storeInternal.actionHandlers) {
-          const result = h(nextState, action, (storeInternal as any).dispatch);
-
-          if (!result || !Array.isArray(result)) {
-            throw Error(
-              "The ActionHandler did not return an array as its result."
-            );
-          }
+      for (const task of tasks) {
+        if (typeof task === "function") {
+          const result = task(nextState);
+          validateResult(result, "InlineHandler");
 
           const [handlerState, changed = false] = result;
           nextState = changed ? handlerState : nextState;
           stateChanged = changed || stateChanged;
+      } else {
+          for (const h of storeInternal.actionHandlers) {
+            const result = h(nextState, task, (storeInternal as any).dispatch);
+            validateResult(result, "ActionHandler");
+
+            const [handlerState, changed = false] = result;
+            nextState = changed ? handlerState : nextState;
+            stateChanged = changed || stateChanged;
+          }
         }
       }
 
@@ -99,4 +104,12 @@ export function create<T>(): Readonly<Reshaper<T>> {
       return this;
     },
   });
+}
+
+function validateResult(result: [state: any, changed?:boolean], taskType: "ActionHandler" | "InlineHandler"){
+  if (!result || !Array.isArray(result)) {
+    throw Error(
+      `The ${taskType} did not return an array as its result.`
+    );
+  }
 }

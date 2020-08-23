@@ -61,7 +61,7 @@ reshaper.addHandlers([
     }
 
     return [state];
-  }
+  },
 ]);
 ```
 
@@ -91,7 +91,7 @@ reshaper.addHandlers([
     }
 
     return [state];
-  }
+  },
 ]);
 ```
 
@@ -99,6 +99,36 @@ You may have noticed state can be mutated - or not - it's up to you. State
 change is indicated by the optional second element in the return array not by
 object equality. If the second element is not provided the default is that state
 has not changed.
+
+### Dispatch inline handlers
+
+Typically after starting asynchronous code in a handler the convention is to
+dispatch another action which will inform all handlers of the asynchronous
+code's completion and one or more of the handlers will use the action to update
+state. Sometimes there is no no need to inform all the handlers about the
+asynchronous result but simply to update state with the asynchroouse result. In
+this case an `InlineHandler` can be dispatched which will be invoked with the
+current state. Like other handler functions it must synchronously return a state
+object and an indication if the state has changed.
+
+```ts
+reshaper.addHandlers([
+  (state, action, dispatch) => {
+    if (action.id === "address") {
+      fetch(`${address_url}?name=${state.name}`).then(response =>
+        // Dispatch an InlineHandler that will update state with the
+        // asynchronous result when it is invoked.
+        dispatch(state => {
+          state.address = response;
+          return [state, true];
+        });
+      );
+    }
+
+    return [state];
+  },
+]);
+```
 
 ### Remove listeners and handlers
 
