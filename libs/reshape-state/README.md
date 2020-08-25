@@ -3,6 +3,8 @@
 A small state management library. Use a reshaper to manage acquiring data for a
 state object from multiple asynchronous sources.
 
+An [example application](https://codesandbox.io/s/reshape-state-0617h?file=/src/swapi/character-reshaper.ts) that uses reshape-state is available at [codesandbox.io](https://codesandbox.io/s/reshape-state-0617h?file=/src/swapi/character-reshaper.ts).
+
 ## Install
 
 ```bash
@@ -107,10 +109,10 @@ Typically after starting asynchronous code in a handler the convention is to
 dispatch another Action which will inform all handlers of the asynchronous
 code's completion and one or more of the handlers will use the action to update
 state. Sometimes there is no no need to inform all the handlers about the
-asynchronous result but simply to update state with the asynchroouse result. In
-this case an `InlineHandler` can be dispatched which will be invoked with the
-current state. Like other handler functions it must synchronously return a state
-object and an indication if the state has changed.
+asynchronous result but simply to update state with the result. In this case an
+`InlineHandler` can be dispatched which will be invoked with the current state.
+Like other handler functions it must synchronously return a state object and an
+indication if the state has changed.
 
 ```ts
 reshaper.addHandlers([
@@ -119,9 +121,9 @@ reshaper.addHandlers([
       fetch(`${address_url}?name=${state.name}`).then(response =>
         // Dispatch an InlineHandler that will update state with the
         // asynchronous result when it is invoked.
-        dispatch(state => {
-          state.address = response;
-          return [state, true];
+        dispatch(currentState => {
+          currentState.address = response;
+          return [currentState, true];
         });
       );
     }
