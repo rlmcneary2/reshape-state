@@ -8,7 +8,7 @@ Also an [example React application](apps/example-app/src/main.tsx).
 
 The `build` steps will generate publishable lib output to the `dist` directory. Use the local np command from the workspace root directory (same as this file).
 
+- Bump the package.json version field.
 - Delete the `dist` directory.
 - Build the library: `yarn build`
-- Edit the dist/lib/reshape-state/package.json file to have the version number you will choose when running `np`.
-- Publish with np, do **not** use global np, the local package in `node_modules` must be used: `./node_modules/.bin/np`
+- `cd` into the "dist/lib/reshape-state" directory and `npm publish` use the same version as in the package.json file.
