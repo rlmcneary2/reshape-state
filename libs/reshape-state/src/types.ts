@@ -1,5 +1,15 @@
-export type Action<T = any> = {
+/**
+ * An object that is dispatched.
+ */
+export interface Action<T = any> {
+  /**
+   * Identifies the action. Handlers use this to determine if they should operate on the action.
+   */
   id: string | number;
+
+  /**
+   * The data needed by handlers to process the action.
+   */
   payload?: T;
 };
 
@@ -10,39 +20,80 @@ export type Action<T = any> = {
  * @param dispatch Allows an action to de dispatched.
  * @returns The first element is a state object. The optional second element indicates if the state has changed, defaults to false.
  */
-export type ActionHandler<T, U = any> = (
-  state: T,
-  action: Action<U>,
-  dispatch: Dispatcher
-) => [state: T, changed?: boolean];
+export interface ActionHandler<T, U = any> {
+  (
+    state: T,
+    action: Action<U>,
+    dispatch: Dispatcher
+  ): [state: T, changed?: boolean]
+};
 
 /**
  * The dispatcher will accept one or more tasks as parameters. Each task is
  * processed in sequence starting with the leftmost parameter. If the task is an
  * `InlineHandler` only that handler will be invoked, the `ActionHandlers` will
  * NOT be invoked as there is no action to pass to them.
+ * @param tasks One or more parameters that are an `Action` or `InlineHandler`.
  */
-export type Dispatcher = (...tasks: (Action | InlineHandler)[]) => void;
+export interface Dispatcher { (...tasks: (Action | InlineHandler)[]): void };
 
 /**
  * Returns a state object.
+ * @returns The current state object.
  */
-export type GetState<T> = () => T;
+export interface GetState<T> { (): T };
 
 /**
  * When passed to the Dispatcher this function will be invoked so state can be updated.
  * @param state Current state.
  * @returns The first element is a state object. The optional second element indicates if the state has changed, defaults to false.
  */
-export type InlineHandler<T = any> = (state: T) => [state: T, changed?: boolean];
+export interface InlineHandler<T = any> { (state: T): [state: T, changed?: boolean] };
 
-export type Reshaper<T> = {
+export interface Reshaper<T> {
+  /**
+   * Add handlers that will be invoked to process a dispatched action.
+   * @param handlers An array of handlers that will modify state.
+   * @returns The Reshaper.
+   */
   addHandlers: (handlers: ActionHandler<T>[]) => Reshaper<T>;
+
+  /**
+   * Add an onChange callback. Only a single callback can be passed to this function but the function can be invoked multiple times to add multiple callbacks.
+   * @param onChange A callback function that will be invoked when state changes.
+   * @returns The Reshaper.
+   */
   addOnChange: (onChange: OnChange<T>) => Reshaper<T>;
+
+  /**
+   * Dispatch an action to update state.
+   */
   dispatch: Dispatcher;
+
+  /**
+   * Remove an array of handlers.
+   * @param handlers Handlers added using `addHandlers`.
+   * @returns The Reshaper.
+   */
   removeHandlers: (handlers: ActionHandler<T>[]) => Reshaper<T>;
+
+  /**
+   * Remove an onChange callback.
+   * @param onChange The instance of the callback passed to `addOnChange`.
+   * @returns The Reshaper.
+   */
   removeOnChange: (onChange: OnChange<T>) => Reshaper<T>;
+
+  /**
+   * Get the current state. The return value of `getter` will be passed to the handlers.
+   * @param getter A function that returns the current state object.
+   * @returns The Reshaper.
+   */
   setGetState: (getter: GetState<T>) => Reshaper<T>;
 };
 
-export type OnChange<T> = (state: T) => void;
+/**
+ * This callback function is invoked when state changes.
+ * @param state The next state.
+ */
+export interface OnChange<T> { (state: T): void };
