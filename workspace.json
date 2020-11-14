@@ -8,14 +8,19 @@
       "schematics": {},
       "architect": {
         "lint": {
-          "builder": "@nrwl/linter:lint",
+          "builder": "@nrwl/linter:eslint",
           "options": {
-            "linter": "eslint",
-            "tsConfig": [
-              "libs/reshape-state/tsconfig.lib.json",
-              "libs/reshape-state/tsconfig.spec.json"
-            ],
-            "exclude": ["**/node_modules/**", "!libs/reshape-state/**/*"]
+            "lintFilePatterns": [
+              "libs/reshape-state/**/*.js",
+              "libs/reshape-state/**/*.jsx",
+              "libs/reshape-state/**/*.ts",
+              "libs/reshape-state/**/*.tsx",
+              "libs/reshape-state/**/*.spec.ts",
+              "libs/reshape-state/**/*.spec.tsx",
+              "libs/reshape-state/**/*.spec.js",
+              "libs/reshape-state/**/*.spec.jsx",
+              "libs/reshape-state/**/*.d.ts"
+            ]
           }
         },
         "build": {
@@ -26,7 +31,8 @@
             "project": "libs/reshape-state/package.json",
             "entryFile": "libs/reshape-state/src/index.ts",
             "babelConfig": "@nrwl/react/plugins/bundle-babel",
-            "rollupConfig": "@nrwl/react/plugins/bundle-rollup"
+            "rollupConfig": "@nrwl/react/plugins/bundle-rollup",
+            "buildableProjectDepsInPackageJsonType": "dependencies"
           }
         },
         "test": {
@@ -97,14 +103,19 @@
           }
         },
         "lint": {
-          "builder": "@nrwl/linter:lint",
+          "builder": "@nrwl/linter:eslint",
           "options": {
-            "linter": "eslint",
-            "tsConfig": [
-              "apps/example-app/tsconfig.app.json",
-              "apps/example-app/tsconfig.spec.json"
-            ],
-            "exclude": ["**/node_modules/**", "!apps/example-app/**/*"]
+            "lintFilePatterns": [
+              "apps/example-app/**/*.js",
+              "apps/example-app/**/*.jsx",
+              "apps/example-app/**/*.ts",
+              "apps/example-app/**/*.tsx",
+              "apps/example-app/**/*.spec.ts",
+              "apps/example-app/**/*.spec.tsx",
+              "apps/example-app/**/*.spec.js",
+              "apps/example-app/**/*.spec.jsx",
+              "apps/example-app/**/*.d.ts"
+            ]
           }
         },
         "test": {
