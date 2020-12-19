@@ -24,7 +24,7 @@ export function create<T>(): Readonly<Reshaper<T>> {
     onChangeHandlers: new Set<OnChange<T>>(),
   };
 
-  ((storeInternal as any).dispatch as Dispatcher) = function (
+  ((storeInternal as any).dispatch as Dispatcher<T>) = function (
     ...tasks: (Action | InlineHandler)[]
   ) {
     addTask(() => {
@@ -106,7 +106,7 @@ export function create<T>(): Readonly<Reshaper<T>> {
   });
 }
 
-function validateResult(result: [state: any, changed?:boolean], taskType: "ActionHandler" | "InlineHandler"){
+function validateResult(result: [state: any, changed?: boolean], taskType: "ActionHandler" | "InlineHandler"){
   if (!result || !Array.isArray(result)) {
     throw Error(
       `The ${taskType} did not return an array as its result.`

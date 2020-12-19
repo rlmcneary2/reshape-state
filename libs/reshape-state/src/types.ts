@@ -1,7 +1,7 @@
 /**
  * An object that is dispatched.
  */
-export interface Action<T = any> {
+export interface Action<P = any> {
   /**
    * Identifies the action. Handlers use this to determine if they should operate on the action.
    */
@@ -10,7 +10,7 @@ export interface Action<T = any> {
   /**
    * The data needed by handlers to process the action.
    */
-  payload?: T;
+  payload?: P;
 };
 
 /**
@@ -20,11 +20,11 @@ export interface Action<T = any> {
  * @param dispatch Allows an action to de dispatched.
  * @returns The first element is a state object. The optional second element indicates if the state has changed, defaults to false.
  */
-export interface ActionHandler<T, U = any> {
+export interface ActionHandler<T, P = any> {
   (
     state: T,
-    action: Action<U>,
-    dispatch: Dispatcher
+    action: Action<P>,
+    dispatch: Dispatcher<T>
   ): [state: T, changed?: boolean]
 };
 
@@ -35,7 +35,7 @@ export interface ActionHandler<T, U = any> {
  * NOT be invoked as there is no action to pass to them.
  * @param tasks One or more parameters that are an `Action` or `InlineHandler`.
  */
-export interface Dispatcher { (...tasks: (Action | InlineHandler)[]): void };
+export interface Dispatcher<T> { (...tasks: (Action | InlineHandler<T>)[]): void };
 
 /**
  * Returns a state object.
@@ -68,7 +68,7 @@ export interface Reshaper<T> {
   /**
    * Dispatch an action to update state.
    */
-  dispatch: Dispatcher;
+  dispatch: Dispatcher<T>;
 
   /**
    * Remove an array of handlers.
