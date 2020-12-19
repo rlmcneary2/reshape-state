@@ -6,7 +6,7 @@ import {
   GetState,
   InlineHandler,
   OnChange,
-  Reshaper,
+  Reshaper
 } from "./types";
 
 /**
@@ -16,12 +16,12 @@ import {
  * @returns A Reshaper object.
  */
 export function create<T>(): Readonly<Reshaper<T>> {
-  const addTask = queue<void>();
+  const addTask = queue();
   let getState: GetState<T>;
 
   const storeInternal = {
     actionHandlers: new Set<ActionHandler<T>>(),
-    onChangeHandlers: new Set<OnChange<T>>(),
+    onChangeHandlers: new Set<OnChange<T>>()
   };
 
   ((storeInternal as any).dispatch as Dispatcher<T>) = function (
@@ -38,7 +38,7 @@ export function create<T>(): Readonly<Reshaper<T>> {
           const [handlerState, changed = false] = result;
           nextState = changed ? handlerState : nextState;
           stateChanged = changed || stateChanged;
-      } else {
+        } else {
           for (const h of storeInternal.actionHandlers) {
             const result = h(nextState, task, (storeInternal as any).dispatch);
             validateResult(result, "ActionHandler");
@@ -102,14 +102,15 @@ export function create<T>(): Readonly<Reshaper<T>> {
     setGetState: function (getter: GetState<T>) {
       getState = getter;
       return this;
-    },
+    }
   });
 }
 
-function validateResult(result: [state: any, changed?: boolean], taskType: "ActionHandler" | "InlineHandler"){
+function validateResult(
+  result: [state: any, changed?: boolean],
+  taskType: "ActionHandler" | "InlineHandler"
+) {
   if (!result || !Array.isArray(result)) {
-    throw Error(
-      `The ${taskType} did not return an array as its result.`
-    );
+    throw Error(`The ${taskType} did not return an array as its result.`);
   }
 }

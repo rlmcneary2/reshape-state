@@ -11,7 +11,7 @@ export interface Action<P = any> {
    * The data needed by handlers to process the action.
    */
   payload?: P;
-};
+}
 
 /**
  * Manages changes state through actions. While the ActionHandler is a synchronus function it may have side effects (start asynchronous actions) and invoke "dispatch" to queue up new actions.
@@ -21,12 +21,11 @@ export interface Action<P = any> {
  * @returns The first element is a state object. The optional second element indicates if the state has changed, defaults to false.
  */
 export interface ActionHandler<T, P = any> {
-  (
+  (state: T, action: Action<P>, dispatch: Dispatcher<T>): [
     state: T,
-    action: Action<P>,
-    dispatch: Dispatcher<T>
-  ): [state: T, changed?: boolean]
-};
+    changed?: boolean
+  ];
+}
 
 /**
  * The dispatcher will accept one or more tasks as parameters. Each task is
@@ -35,20 +34,26 @@ export interface ActionHandler<T, P = any> {
  * NOT be invoked as there is no action to pass to them.
  * @param tasks One or more parameters that are an `Action` or `InlineHandler`.
  */
-export interface Dispatcher<T> { (...tasks: (Action | InlineHandler<T>)[]): void };
+export interface Dispatcher<T> {
+  (...tasks: (Action | InlineHandler<T>)[]): void;
+}
 
 /**
  * Returns a state object.
  * @returns The current state object.
  */
-export interface GetState<T> { (): T };
+export interface GetState<T> {
+  (): T;
+}
 
 /**
  * When passed to the Dispatcher this function will be invoked so state can be updated.
  * @param state Current state.
  * @returns The first element is a state object. The optional second element indicates if the state has changed, defaults to false.
  */
-export interface InlineHandler<T = any> { (state: T): [state: T, changed?: boolean] };
+export interface InlineHandler<T = any> {
+  (state: T): [state: T, changed?: boolean];
+}
 
 export interface Reshaper<T> {
   /**
@@ -90,10 +95,12 @@ export interface Reshaper<T> {
    * @returns The Reshaper.
    */
   setGetState: (getter: GetState<T>) => Reshaper<T>;
-};
+}
 
 /**
  * This callback function is invoked when state changes.
  * @param state The next state.
  */
-export interface OnChange<T> { (state: T): void };
+export interface OnChange<T> {
+  (state: T): void;
+}
