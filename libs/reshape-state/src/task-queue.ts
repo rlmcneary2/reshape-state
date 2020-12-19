@@ -2,7 +2,7 @@
  * Create a queue.
  * @returns The "addTask" function that can be used to add tasks to the queue.
  */
-export function queue<T>() {
+export function queue() {
   const taskQueue = new Set<() => void>();
   let active = false;
 
@@ -55,7 +55,7 @@ export function queue<T>() {
         taskQueue.delete(queuedItem);
         resolveTask();
       },
-      result,
+      result
     };
   };
 }

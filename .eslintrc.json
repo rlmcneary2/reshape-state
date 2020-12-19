@@ -1,45 +1,46 @@
 {
   "root": true,
-  "parser": "@typescript-eslint/parser",
-  "parserOptions": {
-    "ecmaVersion": 2018,
-    "sourceType": "module",
-    "project": "./tsconfig.*?.json"
-  },
   "ignorePatterns": ["**/*"],
-  "plugins": ["prettier", "@typescript-eslint", "@nrwl/nx"],
-  "extends": [
-    "prettier",
-    "plugin:prettier/recommended",
-    "prettier/@typescript-eslint"
-  ],
-  "rules": {
-    "@typescript-eslint/no-empty-function": "off",
-    "@typescript-eslint/no-explicit-any": "off",
-    "@typescript-eslint/explicit-member-accessibility": "off",
-    "@typescript-eslint/explicit-function-return-type": "off",
-    "@typescript-eslint/no-parameter-properties": "off",
-    "@nrwl/nx/enforce-module-boundaries": [
-      "error",
-      {
-        "enforceBuildableLibDependency": true,
-        "allow": [],
-        "depConstraints": [
+  "plugins": ["@nrwl/nx"],
+  "overrides": [
+    {
+      "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
+      "extends": ["plugin:prettier/recommended"],
+      "parserOptions": {
+        "project": "./tsconfig.*?.json"
+      },
+      "plugins": ["prettier"],
+      "rules": {
+        "@typescript-eslint/no-empty-function": "off",
+        "@nrwl/nx/enforce-module-boundaries": [
+          "error",
           {
-            "sourceTag": "*",
-            "onlyDependOnLibsWithTags": ["*"]
+            "enforceBuildableLibDependency": true,
+            "allow": [],
+            "depConstraints": [
+              {
+                "sourceTag": "*",
+                "onlyDependOnLibsWithTags": ["*"]
+              }
+            ]
           }
         ]
       }
-    ],
-    "@typescript-eslint/explicit-module-boundary-types": "off"
-  },
-  "overrides": [
+    },
     {
-      "files": ["*.tsx"],
+      "files": ["*.ts", "*.tsx"],
+      "extends": ["plugin:@nrwl/nx/typescript"],
+      "parserOptions": {
+        "project": "./tsconfig.*?.json"
+      },
       "rules": {
-        "@typescript-eslint/no-unused-vars": "off"
+        "@typescript-eslint/no-explicit-any": "off"
       }
+    },
+    {
+      "files": ["*.js", "*.jsx"],
+      "extends": ["plugin:@nrwl/nx/javascript"],
+      "rules": {}
     }
   ]
 }

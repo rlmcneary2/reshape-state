@@ -33,14 +33,21 @@
             "babelConfig": "@nrwl/react/plugins/bundle-babel",
             "rollupConfig": "@nrwl/react/plugins/bundle-rollup",
             "buildableProjectDepsInPackageJsonType": "dependencies"
-          }
+          },
+          "outputs": [
+            "{options.outputPath}"
+          ]
         },
         "test": {
           "builder": "@nrwl/jest:jest",
           "options": {
             "jestConfig": "libs/reshape-state/jest.config.js",
-            "passWithNoTests": true
-          }
+            "passWithNoTests": true,
+            "tsConfig": "libs/reshape-state/tsconfig.spec.json"
+          },
+          "outputs": [
+            "coverage/libs/reshape-state"
+          ]
         }
       }
     },
@@ -62,7 +69,9 @@
               "apps/example-app/src/favicon.ico",
               "apps/example-app/src/assets"
             ],
-            "styles": ["apps/example-app/src/styles.css"],
+            "styles": [
+              "apps/example-app/src/styles.css"
+            ],
             "scripts": [],
             "webpackConfig": "@nrwl/react/plugins/webpack"
           },
@@ -89,7 +98,10 @@
                 }
               ]
             }
-          }
+          },
+          "outputs": [
+            "{options.outputPath}"
+          ]
         },
         "serve": {
           "builder": "@nrwl/web:dev-server",
@@ -122,8 +134,12 @@
           "builder": "@nrwl/jest:jest",
           "options": {
             "jestConfig": "apps/example-app/jest.config.js",
-            "passWithNoTests": true
-          }
+            "passWithNoTests": true,
+            "tsConfig": "apps/example-app/tsconfig.spec.json"
+          },
+          "outputs": [
+            "coverage/apps/example-app"
+          ]
         }
       }
     }
