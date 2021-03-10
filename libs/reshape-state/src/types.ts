@@ -28,6 +28,18 @@ export interface ActionHandler<T, P = any> {
 }
 
 /**
+ * Options for the `create` function.
+ */
+export interface CreateOptions {
+  /**
+   * If true then when a task is dispatched all the handlers will be called
+   * repeatedly until none of them change the state object. If false each
+   * handler is only called once per dispatched task (default)
+   */
+  loopUntilSettled?: boolean;
+}
+
+/**
  * The dispatcher will accept one or more tasks as parameters. Each task is
  * processed in sequence starting with the leftmost parameter. If the task is an
  * `InlineHandler` only that handler will be invoked, the `ActionHandlers` will

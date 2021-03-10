@@ -1,4 +1,5 @@
 import { create } from "./reshaper";
+import { ActionHandler } from "./types";
 
 describe("reshaper", () => {
   it("creates a reshaper", async () => {
@@ -160,5 +161,62 @@ describe("reshaper", () => {
       fiz: "baz",
       foo: "bar"
     });
+  });
+
+  it("loops until state settles", async () => {
+    const reshaper = create<any>({
+      loopUntilSettled: true
+    }).setGetState(() => "fubar");
+
+    const handler = (jest
+      .fn()
+      .mockReturnValueOnce(["foo", true])
+      .mockReturnValueOnce(["foo"]) as unknown) as ActionHandler<any>;
+    const handler2 = (jest
+      .fn()
+      .mockReturnValueOnce(["bar"])
+      .mockReturnValueOnce(["bar"]) as unknown) as ActionHandler<any>;
+    reshaper.addHandlers([handler, handler2]);
+
+    let resolve: () => void;
+    const wait = new Promise(r => (resolve = r));
+
+    const handleChange = jest.fn(() => resolve());
+    reshaper.addOnChange(handleChange);
+
+    const action = { id: "test", payload: "payload" };
+    reshaper.dispatch(action);
+
+    await wait;
+
+    expect(handler).toHaveBeenCalledTimes(2);
+    expect(handler).toHaveBeenNthCalledWith(
+      1,
+      "fubar",
+      action,
+      expect.anything()
+    );
+    expect(handler).toHaveBeenNthCalledWith(
+      2,
+      "foo",
+      { id: null },
+      expect.anything()
+    );
+
+    expect(handler2).toHaveBeenCalledTimes(2);
+    expect(handler2).toHaveBeenNthCalledWith(
+      1,
+      "foo",
+      action,
+      expect.anything()
+    );
+    expect(handler2).toHaveBeenNthCalledWith(
+      2,
+      "foo",
+      { id: null },
+      expect.anything()
+    );
+
+    expect(handleChange).toHaveBeenCalledTimes(1);
   });
 });
