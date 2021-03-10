@@ -3,7 +3,10 @@
 A small state management library. Use a reshaper to manage acquiring data for a
 state object from multiple asynchronous sources.
 
-An [example application](https://codesandbox.io/s/reshape-state-0617h?file=/src/swapi/character-reshaper.ts) that uses reshape-state is available at [codesandbox.io](https://codesandbox.io/s/reshape-state-0617h?file=/src/swapi/character-reshaper.ts).
+An [example
+application](https://codesandbox.io/s/reshape-state-0617h?file=/src/swapi/character-reshaper.ts)
+that uses reshape-state is available at
+[codesandbox.io](https://codesandbox.io/s/reshape-state-0617h?file=/src/swapi/character-reshaper.ts).
 
 ## Install
 
@@ -132,6 +135,31 @@ reshaper.addHandlers([
   },
 ]);
 ```
+
+### Changing state without an action
+
+There may be situations where you'd like a change to state to trigger further
+changes to state in a different handler. This could be accomplished using a
+"chain" of dispatched actions however if it's possible to determine what updates
+to state are needed based on the current state you can configure the reshaper to
+iterate over all the handlers you provide until state does not change.
+
+To enable this mode pass the `loopUntilSettled` property as an option to the
+`create` function.
+
+```ts
+import { create } from "reshape-state";
+
+const reshaper = create<State>({ loopUntilSettled: true });
+```
+
+Now when an action is dispatched, or an inline handler is invoked, that results
+in a change to state every handler will be called again with a special action.
+This action will have its `id` set to null and will not include a payload.
+
+For example this would be useful if you knew that after fetching data from a
+remote service and updating state that subsequent requests to another service
+must be made for more information.
 
 ### Remove listeners and handlers
 

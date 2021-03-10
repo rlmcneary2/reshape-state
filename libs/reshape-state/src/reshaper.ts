@@ -2,6 +2,7 @@ import { queue } from "./task-queue";
 import {
   Action,
   ActionHandler,
+  CreateOptions,
   Dispatcher,
   GetState,
   InlineHandler,
@@ -12,10 +13,11 @@ import {
 /**
  * Create a Reshaper that will process state by actions and then provide the new
  * state via the OnChange functions.
- * @param getState Returns the state to be updated by the ActionHandlers.
+ * @param options Properties to control the behavior of the reshaper.
  * @returns A Reshaper object.
  */
-export function create<T>(): Readonly<Reshaper<T>> {
+export function create<T>(options: CreateOptions = {}): Readonly<Reshaper<T>> {
+  const { loopUntilSettled = false } = options;
   const addTask = queue();
   let getState: GetState<T>;
 
@@ -31,23 +33,19 @@ export function create<T>(): Readonly<Reshaper<T>> {
       let nextState = getState ? getState() : undefined;
       let stateChanged = false;
       for (const task of tasks) {
-        if (typeof task === "function") {
-          const result = task(nextState);
-          validateResult(result, "InlineHandler");
+        let loopStateChanged = false;
+        let action = task;
+        do {
+          [nextState, loopStateChanged] = processTask<T>(
+            nextState,
+            action,
+            (storeInternal as any).dispatch,
+            storeInternal.actionHandlers
+          );
 
-          const [handlerState, changed = false] = result;
-          nextState = changed ? handlerState : nextState;
-          stateChanged = changed || stateChanged;
-        } else {
-          for (const h of storeInternal.actionHandlers) {
-            const result = h(nextState, task, (storeInternal as any).dispatch);
-            validateResult(result, "ActionHandler");
-
-            const [handlerState, changed = false] = result;
-            nextState = changed ? handlerState : nextState;
-            stateChanged = changed || stateChanged;
-          }
-        }
+          stateChanged = loopStateChanged || stateChanged;
+          action = { id: null };
+        } while (loopUntilSettled && loopStateChanged);
       }
 
       if (stateChanged) {
@@ -104,6 +102,35 @@ export function create<T>(): Readonly<Reshaper<T>> {
       return this;
     }
   });
+}
+
+function processTask<T>(
+  state: T,
+  task: Action | InlineHandler,
+  dispatch: Dispatcher<T>,
+  handlers: Set<ActionHandler<T>>
+): [state: T, changed: boolean] {
+  let nextState = state;
+  let stateChanged = false;
+  if (typeof task === "function") {
+    const result = task(state);
+    validateResult(result, "InlineHandler");
+
+    const [handlerState, changed = false] = result;
+    nextState = changed ? handlerState : nextState;
+    stateChanged = changed || stateChanged;
+  } else {
+    for (const h of handlers) {
+      const result = h(nextState, task, dispatch);
+      validateResult(result, "ActionHandler");
+
+      const [handlerState, changed = false] = result;
+      nextState = changed ? handlerState : nextState;
+      stateChanged = changed || stateChanged;
+    }
+  }
+
+  return [nextState, stateChanged];
 }
 
 function validateResult(
