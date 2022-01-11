@@ -8,6 +8,18 @@ application](https://codesandbox.io/s/reshape-state-0617h?file=/src/swapi/charac
 that uses reshape-state is available at
 [codesandbox.io](https://codesandbox.io/s/reshape-state-0617h?file=/src/swapi/character-reshaper.ts).
 
+- [Install](#install)
+- [Usage](#usage)
+  - [Create a reshaper](#create)
+  - [Listen for state changes](#listen-for-state-changes)
+  - [Dispatch actions to handlers](#dispatch-actions-to-handlers)
+  - [Update state with handler functions](#update-state-with-handler-functions)
+  - [Dispatch inline handlers](#dispatch-inline-handlers)
+  - [Changing state without an action](#changing-state-without-an-action)
+  - [Remove listeners and handlers](#remove-listeners-and-handlers)
+- [Tips & Tricks](#tips-and-tricks)
+  - [Create handler functions using a factory function](#create-handler-functions-using-a-factory-function)
+
 ## Install
 
 ```bash
@@ -27,7 +39,7 @@ import { create } from "reshape-state";
 const reshaper = create<State>();
 ```
 
-### Listen for changes
+### Listen for state changes
 
 Add an OnChange callback to be notified when state changes.
 
@@ -35,7 +47,7 @@ Add an OnChange callback to be notified when state changes.
 reshaper.addOnChange(state => console.log("state changed=", state));
 ```
 
-### Dispatch actions
+### Dispatch actions to handlers
 
 When state needs to be changed use dispatch with one or more tasks as
 parameters. Any Action tasks have one required property `id` which can be a
@@ -46,7 +58,7 @@ state. [Inline handlers can also be dispatched](#dispatch-inline-handlers).
 reshaper.dispatch({ id: "name", payload: "Alice" }, { id: "age", payload: 30 });
 ```
 
-### Update state
+### Update state with handler functions
 
 Add handler functions to change state.
 
@@ -169,4 +181,98 @@ removed.
 ```ts
 reshaper.removeHandlers(handlers);
 reshaper.removeOnChange(handleChange);
+```
+
+## Tips
+
+### Create handler functions using a factory function
+
+There are several reasons for using a factory function:
+  - Move handlers into separate, domain specific module files.
+  - Create a scope for data that is only needed by, and private to, the handler functions.
+
+The reshaper's `addHandlers` function accepts an array of handlers so your factory function must return an array. Eventually you will probably want to pass data to your handlers that they need while they are processing state, or you may need to define variables for the handlers that are only needed by the handlers. During development there may be a variety of variables that change based on the environment your code is deployed to, like "dev," "staging," or "production" so a fairly common pattern I use looks like the following example:
+
+```ts
+/**
+ * auth-handlers.ts
+ */
+
+// This exported function can be called to generate an array of handler
+// functions to pass to the reshaper.
+export function createAuthHandlers(protocol: "http" | "https", domain: string, port? number){
+  // Parts of the service URL that the application needs to talk to may change,
+  // so they are passed to the handlers as arguments to the factory function.
+  const serviceUrl = new URL(`${protocol}://${domain}${port ? `:${port}` : ""}`);
+
+  // We'll use this flag to prevent multiple asynchronous requests to read the
+  // user from being started. Since this variable is only needed by the
+  // `readUser` function we create it inside the factory function.
+  let readUserStatus: "active" | "inactive" = "inactive";
+
+  const readUser: ActionHandler<State, User> = (state, action, dispatch) => {
+    if (action.type !== "read-user"){
+      return [state];
+    }
+
+    // If we're already in a read operation the do not start another one.
+    if (readUserState === "active"){
+      return [state];
+    }
+
+    // Not currently reading the user, set the flag so we know not to start
+    // another user read.
+    readUserStatus = "active";
+
+    fetch(serviceUrl)
+      .then(response => {
+        // If none of our other handlers need to know that the read is complete
+        // then an inline handler can be used to simplify updating state.
+        dispatch(inlineState => [{...inlineState, userResponse: response}, true]);
+      });
+
+    return [state];
+  };
+
+  // Return an array of ActionHandlers.
+  return [readUser];
+}
+
+/**
+ * auth.ts
+ * The file that creates the reshaper.
+ */
+
+// Import the factory function
+import { create } from "reshape-state";
+import { createAuthHandlers } from "./auth-handlers.ts";
+
+// Create the reshaper then invoke the factory function from auth-handlers.ts
+// to generate the handlers.
+const reshaper = create<State>();
+reshaper.addHandlers(createAuthHandlers(process.env.protocol, process.env.domain, +process.env.port));
+```
+
+This pattern can be extended so that handlers for specific business functions or
+domains can be organized in different files.
+
+```ts
+/**
+ * app.ts
+ * The file that creates the reshaper.
+ */
+
+// Import the factory function
+import { create } from "reshape-state";
+import { createAuthHandlers } from "./auth-handlers.ts";
+import { createMenuHandlers } from "./menu-handlers.ts";
+import { createOrderHandlers } from "./order-handlers.ts";
+
+// Here the results of multiple handler factory functions are being passed to the reshaper.
+const reshaper = create<State>();
+reshaper.addHandlers([
+  ...createAuthHandlers(process.env.auth_protocol, process.env.auth_domain, +process.env.auth_port),
+  ...createMenuHandlers(process.env.protocol, process.env.domain, +process.env.port),
+  ...createOrderHandlers(process.env.protocol, process.env.domain, +process.env.port)
+]);
 ```
