@@ -11,7 +11,7 @@ describe("reshaper", () => {
     const handleChange = jest.fn();
     reshaper.addOnChange(handleChange);
 
-    const wait = new Promise(resolve => {
+    const wait = new Promise<void>(resolve => {
       reshaper.addOnChange(() => {
         resolve();
       });
@@ -38,7 +38,7 @@ describe("reshaper", () => {
     const handleChange = jest.fn();
     reshaper.addOnChange(handleChange);
 
-    const wait = new Promise(resolve => {
+    const wait = new Promise<void>(resolve => {
       reshaper.addHandlers([
         () => {
           setTimeout(() => resolve(), 1);
@@ -71,7 +71,7 @@ describe("reshaper", () => {
     const handleChange = jest.fn();
     reshaper.addOnChange(handleChange);
 
-    const wait = new Promise(resolve => {
+    const wait = new Promise<void>(resolve => {
       reshaper.addOnChange(() => {
         resolve();
       });
@@ -103,7 +103,7 @@ describe("reshaper", () => {
     const handleChange = jest.fn();
     reshaper.addOnChange(handleChange);
 
-    const wait = new Promise(resolve => {
+    const wait = new Promise<void>(resolve => {
       reshaper.addOnChange(() => {
         resolve();
       });
@@ -141,7 +141,7 @@ describe("reshaper", () => {
     const handleChange = jest.fn();
     reshaper.addOnChange(handleChange);
 
-    const wait = new Promise(resolve => {
+    const wait = new Promise<void>(resolve => {
       reshaper.addOnChange(() => {
         resolve();
       });
@@ -179,7 +179,7 @@ describe("reshaper", () => {
     reshaper.addHandlers([handler, handler2]);
 
     let resolve: () => void;
-    const wait = new Promise(r => (resolve = r));
+    const wait = new Promise<void>(r => (resolve = r));
 
     const handleChange = jest.fn(() => resolve());
     reshaper.addOnChange(handleChange);

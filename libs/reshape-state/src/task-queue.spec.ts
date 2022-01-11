@@ -20,7 +20,7 @@ describe("task-queue", () => {
       () => new Promise(resolve => setTimeout(() => resolve("completed"), 200))
     );
 
-    await new Promise(resolve => setTimeout(() => resolve(), 1));
+    await new Promise<void>(resolve => setTimeout(() => resolve(), 1));
 
     cancel();
     const val = await result;
