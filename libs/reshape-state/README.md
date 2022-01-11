@@ -200,7 +200,7 @@ The reshaper's `addHandlers` function accepts an array of handlers so your facto
 
 // This exported function can be called to generate an array of handler
 // functions to pass to the reshaper.
-export function createAuthHandlers(protocol: "http" | "https", domain: string, port? number){
+export function createAuthHandlers(protocol: "http" | "https", domain: string, port?: number){
   // Parts of the service URL that the application needs to talk to may change,
   // so they are passed to the handlers as arguments to the factory function.
   const serviceUrl = new URL(`${protocol}://${domain}${port ? `:${port}` : ""}`);
@@ -229,6 +229,10 @@ export function createAuthHandlers(protocol: "http" | "https", domain: string, p
         // If none of our other handlers need to know that the read is complete
         // then an inline handler can be used to simplify updating state.
         dispatch(inlineState => [{...inlineState, userResponse: response}, true]);
+
+        // Now we're ready to process another request for user data so update
+        // the flag's value.
+        readUserStatus = "inactive";
       });
 
     return [state];
