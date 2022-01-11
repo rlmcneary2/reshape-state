@@ -14,10 +14,10 @@ export function queue() {
       return;
     }
 
-    const queudItem: () => Promise<void> = taskQueue.values().next().value;
-    taskQueue.delete(queudItem);
+    const queuedItem: () => Promise<void> = taskQueue.values().next().value;
+    taskQueue.delete(queuedItem);
 
-    await queudItem();
+    await queuedItem();
 
     if (taskQueue.size < 1) {
       active = false;
