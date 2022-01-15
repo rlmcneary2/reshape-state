@@ -20,6 +20,7 @@ export function create<T>(options: CreateOptions = {}): Readonly<Reshaper<T>> {
   const { loopUntilSettled = false } = options;
   const addTask = queue();
   let getState: GetState<T>;
+  let missingGetStateLogged = false;
 
   const storeInternal = {
     actionHandlers: new Set<ActionHandler<T>>(),
@@ -30,6 +31,15 @@ export function create<T>(options: CreateOptions = {}): Readonly<Reshaper<T>> {
     ...tasks: (Action | InlineHandler)[]
   ) {
     addTask(() => {
+      if (!getState) {
+        if (!missingGetStateLogged) {
+          missingGetStateLogged = true;
+          console.warn(
+            "reshape-state: No GetState function exists; use `setGetState` to provide one. Initial state will be undefined."
+          );
+        }
+      }
+
       let nextState = getState ? getState() : undefined;
       let stateChanged = false;
       for (const task of tasks) {
