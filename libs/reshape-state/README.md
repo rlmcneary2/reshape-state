@@ -11,6 +11,7 @@ that uses reshape-state is available at
 - [Install](#install)
 - [Usage](#usage)
   - [Create a reshaper](#create)
+  - [Provide the current state](#provide-the-current-state)
   - [Listen for state changes](#listen-for-state-changes)
   - [Dispatch actions to handlers](#dispatch-actions-to-handlers)
   - [Update state with handler functions](#update-state-with-handler-functions)
@@ -19,6 +20,7 @@ that uses reshape-state is available at
   - [Remove listeners and handlers](#remove-listeners-and-handlers)
 - [Tips & Tricks](#tips-and-tricks)
   - [Create handler functions using a factory function](#create-handler-functions-using-a-factory-function)
+  - [React integration](#react-integration)
 
 ## Install
 
@@ -39,12 +41,26 @@ import { create } from "reshape-state";
 const reshaper = create<State>();
 ```
 
+### Provide the current state
+
+The reshaper does not maintain state, it updates state. The reshaper also is
+agnostic about the type of state, it could be an object, string, number, etc. To
+provide the current state to the reshaper - which it will pass to the handler
+functions - provide a function to the reshaper which when invoked returns the
+current state.
+
+```ts
+let currentState: unknown;
+reshaper.setGetState(() => currentState);
+```
+
 ### Listen for state changes
 
 Add an OnChange callback to be notified when state changes.
 
 ```ts
-reshaper.addOnChange(state => console.log("state changed=", state));
+let currentState: unknown;
+reshaper.addOnChange(state => currentState = state));
 ```
 
 ### Dispatch actions to handlers
@@ -279,4 +295,85 @@ reshaper.addHandlers([
   ...createMenuHandlers(process.env.protocol, process.env.domain, +process.env.port),
   ...createOrderHandlers(process.env.protocol, process.env.domain, +process.env.port)
 ]);
+```
+
+
+### React integration
+
+One way to integrate reshape-state into React is to use Context with components
+for state management. Several key points are:
+  - Use an OnChange handler in the Context's Provider to store state in the
+    value of a `useState` hook.
+  - Update state through functions on properties of the Context value. In turn
+    those functions will use dispatch to update state.
+
+Commonly this implementation is enhanced through the use of custom hooks to
+split up changes to context data values (which change) from context function
+values (which usually don't change). The custom hooks can also use selector
+functions to reduce the number of rerenders that changes to state might cause.
+
+Also since different Contexts can be provided at different locations through the
+React component tree it's possible to have a unique reshaper instance in each
+different Context as needed.
+
+```tsx
+/**
+ * context.ts
+ */
+export const Context = createContext();
+
+export Provider ({children, reshaper}: Props) {
+  const [data, setData] = useState<unknown>();
+
+  // When state is changed by the reshaper all of its OnChange handlers will be
+  // invoked. Set the state value passed to the OnChange handler into a
+  // `useState` hook.
+  useEffect(() => {
+    function handleChange (nextState: unknown) {
+      setData(...nextState);
+    }
+
+    reshaper.addOnChange(handleChange);
+
+    return () => {
+      reshaper.removeOnChange(handleChange);
+    };
+  }, [reshaper]);
+
+  // Provide a function to the reshaper that returns the current value of state
+  // to the reshaper. Note that this is done in a separate hook because the
+  // GetState function needs to be updated with the current state every time
+  // state changes.  
+  useEffect(() => {
+    reshaper.setGetState(() => data);
+  }, [reshaper, data]);
+
+  // Create the value that is passed through Context. This includes the state
+  // (data) as well as a function to update the name field that will dispatch
+  // an action to the reshaper.
+  const value = {
+    ...data,
+    setName: (name: string) => reshaper.dispatch({ payload: name, type: "UPDATE_NAME" });
+  };
+
+  return <Context.Provider value={value}>{children}</Context.Provider>;
+}
+```
+
+```tsx
+/**
+ * A component that uses the data and function values provided through Context.
+ */
+
+export function MyComponent() {
+  // Extract the value that we need from Context
+  const { name, setName } = useContext(Context);
+
+  // When the user types the name will be updated in state.
+  function handleInput(evt) {
+    setName(evt.target.value);
+  }
+
+  return <input onInput={handleInput} value={name} />
+}
 ```
