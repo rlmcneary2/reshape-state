@@ -330,6 +330,12 @@ export Provider ({children, reshaper}: Props) {
   // `useState` hook.
   useEffect(() => {
     function handleChange (nextState: unknown) {
+      // Remember, the reshaper doesn't determine if state has changed based on
+      // a value comparison, the developer indicates if it has changed. React
+      // however uses a value comparison to determine when the value set on a
+      // `useState` hook has changed. Here the `nextState` value is spread to
+      // create a new object instance which will trigger a React update cycle
+      // to begin.
       setData(...nextState);
     }
 
