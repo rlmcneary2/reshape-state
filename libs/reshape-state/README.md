@@ -11,6 +11,7 @@ that uses reshape-state is available at
 
 - [Install](#install)
 - [Usage](#usage)
+  - [Detailed code documentation](https://rlmcneary2.github.io/reshape-state)
   - [Create a reshaper](#create)
   - [Provide the current state](#provide-the-current-state)
   - [Listen for state changes](#listen-for-state-changes)
