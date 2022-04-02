@@ -1,7 +1,8 @@
 # reshape-state
 
-A small state management library. Use a reshaper to manage acquiring data for a
-state object from multiple asynchronous sources.
+A [small state management library](https://github.com/rlmcneary2/reshape-state).
+Use a reshaper to manage acquiring data for a state object from multiple
+asynchronous sources.
 
 An [example
 application](https://codesandbox.io/s/reshape-state-0617h?file=/src/swapi/character-reshaper.ts)
@@ -65,7 +66,7 @@ reshaper.addOnChange(state => currentState = state));
 
 ### Dispatch actions to handlers
 
-When state needs to be changed use dispatch with one or more tasks as
+When state needs to be changed use `dispatch` with one or more tasks as
 parameters. Any Action tasks have one required property `id` which can be a
 string or number; the optional `payload` contains information used to update
 state. [Inline handlers can also be dispatched](#dispatch-inline-handlers).
@@ -181,9 +182,10 @@ import { create } from "reshape-state";
 const reshaper = create<State>({ loopUntilSettled: true });
 ```
 
-Now when an action is dispatched, or an inline handler is invoked, that results
-in a change to state every handler will be called again with a special action.
-This action will have its `id` set to null and will not include a payload.
+Now when an action is dispatched - or an inline handler is invoked - that
+results in a change to state every handler will be called again with a special
+action. This action will have its `id` set to null and will not include a
+payload.
 
 For example this would be useful if you knew that after fetching data from a
 remote service and updating state that subsequent requests to another service

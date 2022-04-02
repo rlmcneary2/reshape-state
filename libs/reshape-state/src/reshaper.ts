@@ -11,9 +11,10 @@ import {
 } from "./types";
 
 /**
- * Create a Reshaper that will process state by actions and then provide the new
- * state via the OnChange functions.
- * @param options Properties to control the behavior of the reshaper.
+ * This is the entry function of reshape-state; creates an instance of a
+ * Reshaper.
+ * @template T The type of the state object.
+ * @param options Control the behavior of the reshaper.
  * @returns A Reshaper object.
  */
 export function create<T>(options: CreateOptions = {}): Readonly<Reshaper<T>> {
