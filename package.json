@@ -3,7 +3,7 @@
   "browser": "reshape-state.umd.js",
   "bugs": "https://github.com/rlmcneary2/reshape-state/issues",
   "description": "A small state management library. Use a reshaper to manage the acquisition of data for a state object from multiple asynchronous sources.",
-  "homepage": "https://rlmcneary2.github.io/reshape-state",
+  "homepage": "https://limnous.com/reshape-state/",
   "keywords": [
     "state",
     "state management",
