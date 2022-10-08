@@ -1,56 +1,6 @@
 {
   "version": 1,
   "projects": {
-    "reshape-state": {
-      "root": "libs/reshape-state",
-      "sourceRoot": "libs/reshape-state/src",
-      "projectType": "library",
-      "schematics": {},
-      "architect": {
-        "lint": {
-          "builder": "@nrwl/linter:eslint",
-          "options": {
-            "lintFilePatterns": [
-              "libs/reshape-state/**/*.js",
-              "libs/reshape-state/**/*.jsx",
-              "libs/reshape-state/**/*.ts",
-              "libs/reshape-state/**/*.tsx",
-              "libs/reshape-state/**/*.spec.ts",
-              "libs/reshape-state/**/*.spec.tsx",
-              "libs/reshape-state/**/*.spec.js",
-              "libs/reshape-state/**/*.spec.jsx",
-              "libs/reshape-state/**/*.d.ts"
-            ]
-          }
-        },
-        "build": {
-          "builder": "@nrwl/web:package",
-          "options": {
-            "outputPath": "dist/libs/reshape-state",
-            "tsConfig": "libs/reshape-state/tsconfig.lib.json",
-            "project": "libs/reshape-state/package.json",
-            "entryFile": "libs/reshape-state/src/index.ts",
-            "babelConfig": "@nrwl/react/plugins/bundle-babel",
-            "rollupConfig": "@nrwl/react/plugins/bundle-rollup",
-            "buildableProjectDepsInPackageJsonType": "dependencies"
-          },
-          "outputs": [
-            "{options.outputPath}"
-          ]
-        },
-        "test": {
-          "builder": "@nrwl/jest:jest",
-          "options": {
-            "jestConfig": "libs/reshape-state/jest.config.js",
-            "passWithNoTests": true,
-            "tsConfig": "libs/reshape-state/tsconfig.spec.json"
-          },
-          "outputs": [
-            "coverage/libs/reshape-state"
-          ]
-        }
-      }
-    },
     "example-app": {
       "root": "apps/example-app",
       "sourceRoot": "apps/example-app/src",
@@ -69,9 +19,7 @@
               "apps/example-app/src/favicon.ico",
               "apps/example-app/src/assets"
             ],
-            "styles": [
-              "apps/example-app/src/styles.css"
-            ],
+            "styles": ["apps/example-app/src/styles.css"],
             "scripts": [],
             "webpackConfig": "@nrwl/react/plugins/webpack"
           },
@@ -99,9 +47,7 @@
               ]
             }
           },
-          "outputs": [
-            "{options.outputPath}"
-          ]
+          "outputs": ["{options.outputPath}"]
         },
         "serve": {
           "builder": "@nrwl/web:dev-server",
@@ -128,7 +74,8 @@
               "apps/example-app/**/*.spec.jsx",
               "apps/example-app/**/*.d.ts"
             ]
-          }
+          },
+          "outputs": ["{options.outputFile}"]
         },
         "test": {
           "builder": "@nrwl/jest:jest",
@@ -137,9 +84,54 @@
             "passWithNoTests": true,
             "tsConfig": "apps/example-app/tsconfig.spec.json"
           },
-          "outputs": [
-            "coverage/apps/example-app"
-          ]
+          "outputs": ["coverage/apps/example-app"]
+        }
+      }
+    },
+    "reshape-state": {
+      "root": "libs/reshape-state",
+      "sourceRoot": "libs/reshape-state/src",
+      "projectType": "library",
+      "schematics": {},
+      "architect": {
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": [
+              "libs/reshape-state/**/*.js",
+              "libs/reshape-state/**/*.jsx",
+              "libs/reshape-state/**/*.ts",
+              "libs/reshape-state/**/*.tsx",
+              "libs/reshape-state/**/*.spec.ts",
+              "libs/reshape-state/**/*.spec.tsx",
+              "libs/reshape-state/**/*.spec.js",
+              "libs/reshape-state/**/*.spec.jsx",
+              "libs/reshape-state/**/*.d.ts"
+            ]
+          },
+          "outputs": ["{options.outputFile}"]
+        },
+        "build": {
+          "builder": "@nrwl/web:package",
+          "options": {
+            "outputPath": "dist/libs/reshape-state",
+            "tsConfig": "libs/reshape-state/tsconfig.lib.json",
+            "project": "libs/reshape-state/package.json",
+            "entryFile": "libs/reshape-state/src/index.ts",
+            "babelConfig": "@nrwl/react/plugins/bundle-babel",
+            "rollupConfig": "@nrwl/react/plugins/bundle-rollup",
+            "buildableProjectDepsInPackageJsonType": "dependencies"
+          },
+          "outputs": ["{options.outputPath}"]
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "libs/reshape-state/jest.config.js",
+            "passWithNoTests": true,
+            "tsConfig": "libs/reshape-state/tsconfig.spec.json"
+          },
+          "outputs": ["coverage/libs/reshape-state"]
         }
       }
     }
