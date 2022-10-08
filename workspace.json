@@ -8,7 +8,7 @@
       "schematics": {},
       "architect": {
         "build": {
-          "builder": "@nrwl/web:webpack",
+          "builder": "@nrwl/webpack:webpack",
           "options": {
             "outputPath": "dist/apps/example-app",
             "index": "apps/example-app/src/index.html",
@@ -45,20 +45,31 @@
                   "maximumError": "5mb"
                 }
               ]
+            },
+            "development": {
+              "extractLicenses": false,
+              "optimization": false,
+              "sourceMap": true,
+              "vendorChunk": true
             }
           },
-          "outputs": ["{options.outputPath}"]
+          "outputs": ["{options.outputPath}"],
+          "defaultConfiguration": "production"
         },
         "serve": {
-          "builder": "@nrwl/web:dev-server",
+          "builder": "@nrwl/webpack:dev-server",
           "options": {
             "buildTarget": "example-app:build"
           },
           "configurations": {
             "production": {
               "buildTarget": "example-app:build:production"
+            },
+            "development": {
+              "buildTarget": "example-app:build:development"
             }
-          }
+          },
+          "defaultConfiguration": "development"
         },
         "lint": {
           "builder": "@nrwl/linter:eslint",
@@ -80,7 +91,7 @@
         "test": {
           "builder": "@nrwl/jest:jest",
           "options": {
-            "jestConfig": "apps/example-app/jest.config.js",
+            "jestConfig": "apps/example-app/jest.config.ts",
             "passWithNoTests": true,
             "tsConfig": "apps/example-app/tsconfig.spec.json"
           },
@@ -128,7 +139,7 @@
         "test": {
           "builder": "@nrwl/jest:jest",
           "options": {
-            "jestConfig": "libs/reshape-state/jest.config.js",
+            "jestConfig": "libs/reshape-state/jest.config.ts",
             "passWithNoTests": true,
             "tsConfig": "libs/reshape-state/tsconfig.spec.json"
           },
@@ -137,5 +148,6 @@
       },
       "tags": []
     }
-  }
+  },
+  "$schema": "./node_modules/nx/schemas/workspace-schema.json"
 }
