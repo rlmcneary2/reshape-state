@@ -1,3 +1,3 @@
-module.exports = {
-  projects: ["<rootDir>/libs/reshape-state", "<rootDir>/apps/example-app"]
-};
+const { getJestProjects } = require("@nrwl/jest");
+
+module.exports = { projects: getJestProjects() };

@@ -20,14 +20,22 @@
     }
   },
   "projects": {
-    "reshape-state": {
+    "example-app": {
       "tags": []
     },
-    "example-app": {
+    "reshape-state": {
       "tags": []
     }
   },
   "affected": {
     "defaultBase": "master"
+  },
+  "targetDependencies": {
+    "build": [
+      {
+        "target": "build",
+        "projects": "dependencies"
+      }
+    ]
   }
 }
