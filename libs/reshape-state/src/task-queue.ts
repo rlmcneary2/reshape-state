@@ -6,7 +6,7 @@ export function queue() {
   const taskQueue = new Set<() => void>();
   let active = false;
 
-  async function process() {
+  async function processTaskQueueValues() {
     active = true;
 
     if (taskQueue.size < 1) {
@@ -14,22 +14,22 @@ export function queue() {
       return;
     }
 
-    const queuedItem: () => Promise<void> = taskQueue.values().next().value;
-    taskQueue.delete(queuedItem);
+    const taskQueueValue: () => Promise<void> = taskQueue.values().next().value;
+    taskQueue.delete(taskQueueValue);
 
-    await queuedItem();
+    await taskQueueValue();
 
     if (taskQueue.size < 1) {
       active = false;
       return;
     }
 
-    setTimeout(() => process(), 0);
+    setTimeout(() => processTaskQueueValues(), 0);
   }
 
-  return function <T>(task: Task<T>): TaskResult<T> {
-    let resolveTask: (value?: T | Promise<T>) => void;
-    const result = new Promise<T>(res => (resolveTask = res));
+  return function queueItem<T, CancelData = void>(task: Task<T>): TaskResult<T, CancelData> {
+    let resolveTask: PromiseResolver<T, CancelData>;
+    const result = new Promise<T | CancelData>(res => (resolveTask = res));
     let canceled = false;
 
     const queuedItem = async () => {
@@ -46,14 +46,14 @@ export function queue() {
     taskQueue.add(queuedItem);
 
     setTimeout(() => {
-      !active && process();
+      !active && processTaskQueueValues();
     }, 0);
 
     return {
-      cancel: () => {
+      cancel: (data: CancelData) => {
         canceled = true;
         taskQueue.delete(queuedItem);
-        resolveTask();
+        resolveTask(data);
       },
       result
     };
@@ -62,7 +62,9 @@ export function queue() {
 
 export type Task<T> = () => T;
 
-export type TaskResult<T> = {
-  cancel: () => void;
-  result: Promise<T>;
+export interface TaskResult<T, CancelData = void> {
+  cancel: (data: CancelData) => void;
+  result: Promise<T | CancelData>;
 };
+
+type PromiseResolver<T, CancelData = void> = (value: T | PromiseLike<T> | CancelData) => void;

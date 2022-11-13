@@ -30,7 +30,7 @@ export interface Action<P = any> {
  * defaults to false.
  */
 export interface ActionHandler<T, P = any> {
-  (state: T, action: Action<P>, dispatch: Dispatcher<T>): [
+  (state: T, action: Action<P> | LoopAction<P>, dispatch: Dispatcher<T>): [
     state: T,
     changed?: boolean
   ];
@@ -83,6 +83,15 @@ export interface GetState<T> {
  */
 export interface InlineHandler<T = any> {
   (state: T): [state: T, changed?: boolean];
+}
+
+/**
+ * An Action object passed to handlers when state has changed and
+ * `loopUntilSettled` is true.
+ */
+export interface LoopAction<T = unknown> extends Omit<Action<T>, "id"> {
+  /** Will always be null. */
+  id: null;
 }
 
 /**

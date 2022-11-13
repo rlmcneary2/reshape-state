@@ -6,6 +6,7 @@ import {
   Dispatcher,
   GetState,
   InlineHandler,
+  LoopAction,
   OnChange,
   Reshaper
 } from "./types";
@@ -41,11 +42,11 @@ export function create<T>(options: CreateOptions = {}): Readonly<Reshaper<T>> {
         }
       }
 
-      let nextState = getState ? getState() : undefined;
+      let nextState = getState();
       let stateChanged = false;
       for (const task of tasks) {
         let loopStateChanged = false;
-        let action = task;
+        let action: Action | InlineHandler | LoopAction = task;
         do {
           [nextState, loopStateChanged] = processTask<T>(
             nextState,
@@ -117,7 +118,7 @@ export function create<T>(options: CreateOptions = {}): Readonly<Reshaper<T>> {
 
 function processTask<T>(
   state: T,
-  task: Action | InlineHandler,
+  task: Action | InlineHandler | LoopAction,
   dispatch: Dispatcher<T>,
   handlers: Set<ActionHandler<T>>
 ): [state: T, changed: boolean] {
