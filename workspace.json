@@ -104,28 +104,22 @@
       "root": "libs/reshape-state",
       "sourceRoot": "libs/reshape-state/src",
       "projectType": "library",
-      "schematics": {},
       "architect": {
-        "lint": {
-          "builder": "@nrwl/linter:eslint",
-          "options": {
-            "lintFilePatterns": [
-              "libs/reshape-state/**/*.js",
-              "libs/reshape-state/**/*.jsx",
-              "libs/reshape-state/**/*.ts",
-              "libs/reshape-state/**/*.tsx",
-              "libs/reshape-state/**/*.spec.ts",
-              "libs/reshape-state/**/*.spec.tsx",
-              "libs/reshape-state/**/*.spec.js",
-              "libs/reshape-state/**/*.spec.jsx",
-              "libs/reshape-state/**/*.d.ts"
-            ]
-          },
-          "outputs": ["{options.outputFile}"]
-        },
         "build": {
           "builder": "@nrwl/web:rollup",
           "options": {
+            "assets": [
+              {
+                "glob": "*.md",
+                "input": "libs/reshape-state",
+                "output": "."
+              },
+              {
+                "glob": "LICENSE",
+                "input": "libs/reshape-state",
+                "output": "."
+              }
+            ],
             "babelConfig": "@nrwl/react/plugins/bundle-babel",
             "buildableProjectDepsInPackageJsonType": "dependencies",
             "entryFile": "libs/reshape-state/src/index.ts",
@@ -145,6 +139,23 @@
             "tsConfig": "libs/reshape-state/tsconfig.spec.json"
           },
           "outputs": ["coverage/libs/reshape-state"]
+        },
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": [
+              "libs/reshape-state/**/*.js",
+              "libs/reshape-state/**/*.jsx",
+              "libs/reshape-state/**/*.ts",
+              "libs/reshape-state/**/*.tsx",
+              "libs/reshape-state/**/*.spec.ts",
+              "libs/reshape-state/**/*.spec.tsx",
+              "libs/reshape-state/**/*.spec.js",
+              "libs/reshape-state/**/*.spec.jsx",
+              "libs/reshape-state/**/*.d.ts"
+            ]
+          },
+          "outputs": ["{options.outputFile}"]
         }
       },
       "tags": []
