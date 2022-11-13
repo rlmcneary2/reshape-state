@@ -21,8 +21,6 @@
     "nx": "nx",
     "start": "nx serve",
     "build": "nx build",
-    "postbuild": "copyfiles -f libs/reshape-state/README.md libs/reshape-state/LICENSE dist/libs/reshape-state && rimraf libs/reshape-state/package.json",
-    "prebuild": "copyfiles package.json libs/reshape-state",
     "test": "nx test",
     "lint": "nx workspace-lint && nx lint",
     "e2e": "nx e2e",
