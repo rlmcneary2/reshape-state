@@ -126,13 +126,14 @@
         "build": {
           "builder": "@nrwl/web:rollup",
           "options": {
-            "outputPath": "dist/libs/reshape-state",
-            "tsConfig": "libs/reshape-state/tsconfig.lib.json",
-            "project": "libs/reshape-state/package.json",
-            "entryFile": "libs/reshape-state/src/index.ts",
             "babelConfig": "@nrwl/react/plugins/bundle-babel",
-            "rollupConfig": "@nrwl/react/plugins/bundle-rollup",
-            "buildableProjectDepsInPackageJsonType": "dependencies"
+            "buildableProjectDepsInPackageJsonType": "dependencies",
+            "entryFile": "libs/reshape-state/src/index.ts",
+            "format": ["esm"],
+            "outputPath": "dist/libs/reshape-state",
+            "project": "libs/reshape-state/package.json",
+            "rollupConfig": "libs/reshape-state/rollup.config.js",
+            "tsConfig": "libs/reshape-state/tsconfig.lib.json"
           },
           "outputs": ["{options.outputPath}"]
         },
