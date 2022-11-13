@@ -9,6 +9,7 @@
     "lib": ["es2020", "dom"],
     "module": "esnext",
     "moduleResolution": "node",
+    "noImplicitAny": true,
     "paths": {
       "@reshape-state/reshape-state": ["libs/reshape-state/src/index.ts"]
     },
