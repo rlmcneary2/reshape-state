@@ -16,12 +16,13 @@ export interface Action<P = unknown> {
 }
 
 /**
- * Processes state and makes changes based on `Actions`. While the ActionHandler
- * is a synchronous function it may have side effects (start asynchronous
- * actions) and invoke "dispatch" to queue up new actions.
+ * Processes state and makes changes based on the `action` and / or `state`.
+ * While the ActionHandler is a synchronous function it may have side effects
+ * (start asynchronous actions) and can invoke "dispatch" to queue up new
+ * actions.
  * @template T The type of the `state` parameter and the first element in the
  * return tuple.
- * @template P The type of the Action `payload`.
+ * @template P The type of the `action`'s `payload` property.
  * @param state Current state.
  * @param action The action dispatched to the handler.
  * @param dispatch Allows an action to de dispatched.
@@ -30,7 +31,7 @@ export interface Action<P = unknown> {
  * defaults to false.
  */
 export interface ActionHandler<T, P = unknown> {
-  (state: T, action: Action<P> | LoopAction<P>, dispatch: Dispatcher<T>): [
+  (state: T, action: Action<P> | LoopAction, dispatch: Dispatcher<T>): [
     state: T,
     changed?: boolean
   ];
@@ -43,16 +44,18 @@ export interface CreateOptions {
   /**
    * If true then when a task is dispatched all the handlers will be called
    * repeatedly until none of them change the state object. If false each
-   * handler is only called once per dispatched task (default).
+   * handler is only called once per dispatched {@link Action} or
+   * {@link InlineHandler} (default).
    */
   loopUntilSettled?: boolean;
 }
 
 /**
  * Instances of a Dispatcher accept one or more tasks as parameters. Each task
- * is processed in sequence starting0000 with the leftmost parameter. If a task is
- * an Action it will be passed sequentially to each {@link ActionHandler}. If a
- * task is an InlineHandler that inline handler function will be invoked.
+ * is processed in sequence starting with the leftmost parameter. If a task is
+ * an {@link Action} it will be passed sequentially to each
+ * {@link ActionHandler}. If a task is an {@link InlineHandler} that inline
+ * handler function will be invoked.
  * @template T The type of the state object passed to each {@link ActionHandler}
  * and {@link InlineHandler}.
  * @template P The type of the action payload {@link Action}.
@@ -87,10 +90,13 @@ export interface InlineHandler<T = unknown> {
 }
 
 /**
- * An Action object passed to handlers when state has changed and
- * `loopUntilSettled` is true.
+ * An object implementing this interface is passed to an {@link ActionHandler}
+ * as the `action` parameter when `loopUntilSettled` is true and state has
+ * changed. This object has no useful information - the only property `id` is
+ * always null. Handlers must use the current state to determine if they have
+ * any work to do.
  */
-export interface LoopAction<T = unknown> extends Omit<Action<T>, "id"> {
+export interface LoopAction extends Omit<Action<void>, "id" | "payload"> {
   /** Will always be null. */
   id: null;
 }

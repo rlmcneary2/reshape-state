@@ -6,6 +6,7 @@ export {
   Dispatcher,
   GetState,
   InlineHandler,
+  LoopAction,
   OnChange,
   Reshaper
 } from "./types";

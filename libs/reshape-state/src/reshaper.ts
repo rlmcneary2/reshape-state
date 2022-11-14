@@ -18,8 +18,8 @@ import {
  * @param options Control the behavior of the reshaper.
  * @returns A Reshaper object.
  */
-export function create<T>(options: CreateOptions = {}): Readonly<Reshaper<T>> {
-  const { loopUntilSettled = false } = options;
+export function create<T>(options?: CreateOptions): Readonly<Reshaper<T>> {
+  const { loopUntilSettled = false } = options ?? {};
   const addTask = queue();
   let getState: GetState<T>;
   let missingGetStateLogged = false;
