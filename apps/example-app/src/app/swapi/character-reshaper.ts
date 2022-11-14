@@ -1,4 +1,7 @@
-import { create as createReshaper, Reshaper } from "@reshape-state/reshape-state";
+import {
+  create as createReshaper,
+  Reshaper
+} from "@reshape-state/reshape-state";
 
 //
 // Thank you!
@@ -31,6 +34,7 @@ export function create(): Readonly<Reshaper<State>> {
         })
         .catch(() => (getPeopleInProgress = false));
 
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { homeworld, person, starships, ...nextState } = state;
       return [nextState, true];
     },
@@ -126,7 +130,10 @@ export function create(): Readonly<Reshaper<State>> {
 
 const BASE_URL = "https://swapi.dev/api/";
 
-async function get<T = any>(path: SwapiPath, id: number | string): Promise<T> {
+async function get<T = unknown>(
+  path: SwapiPath,
+  id: number | string
+): Promise<T> {
   const response = await fetch(`${BASE_URL}${path}/${id}/`);
   return (await response.json()) as T;
 }

@@ -5,13 +5,16 @@
       "root": "apps/example-app",
       "sourceRoot": "apps/example-app/src",
       "projectType": "application",
-      "schematics": {},
       "architect": {
         "build": {
           "builder": "@nrwl/webpack:webpack",
+          "outputs": ["{options.outputPath}"],
+          "defaultConfiguration": "production",
           "options": {
+            "compiler": "babel",
             "outputPath": "dist/apps/example-app",
             "index": "apps/example-app/src/index.html",
+            "baseHref": "/",
             "main": "apps/example-app/src/main.tsx",
             "polyfills": "apps/example-app/src/polyfills.ts",
             "tsConfig": "apps/example-app/tsconfig.app.json",
@@ -24,6 +27,12 @@
             "webpackConfig": "@nrwl/react/plugins/webpack"
           },
           "configurations": {
+            "development": {
+              "extractLicenses": false,
+              "optimization": false,
+              "sourceMap": true,
+              "vendorChunk": true
+            },
             "production": {
               "fileReplacements": [
                 {
@@ -34,68 +43,43 @@
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
-              "extractCss": true,
               "namedChunks": false,
               "extractLicenses": true,
-              "vendorChunk": false,
-              "budgets": [
-                {
-                  "type": "initial",
-                  "maximumWarning": "2mb",
-                  "maximumError": "5mb"
-                }
-              ]
-            },
-            "development": {
-              "extractLicenses": false,
-              "optimization": false,
-              "sourceMap": true,
-              "vendorChunk": true
+              "vendorChunk": false
             }
-          },
-          "outputs": ["{options.outputPath}"],
-          "defaultConfiguration": "production"
+          }
         },
         "serve": {
           "builder": "@nrwl/webpack:dev-server",
+          "defaultConfiguration": "development",
           "options": {
-            "buildTarget": "example-app:build"
+            "buildTarget": "example-app:build",
+            "hmr": true
           },
           "configurations": {
-            "production": {
-              "buildTarget": "example-app:build:production"
-            },
             "development": {
               "buildTarget": "example-app:build:development"
+            },
+            "production": {
+              "buildTarget": "example-app:build:production",
+              "hmr": false
             }
-          },
-          "defaultConfiguration": "development"
+          }
         },
         "lint": {
           "builder": "@nrwl/linter:eslint",
+          "outputs": ["{options.outputFile}"],
           "options": {
-            "lintFilePatterns": [
-              "apps/example-app/**/*.js",
-              "apps/example-app/**/*.jsx",
-              "apps/example-app/**/*.ts",
-              "apps/example-app/**/*.tsx",
-              "apps/example-app/**/*.spec.ts",
-              "apps/example-app/**/*.spec.tsx",
-              "apps/example-app/**/*.spec.js",
-              "apps/example-app/**/*.spec.jsx",
-              "apps/example-app/**/*.d.ts"
-            ]
-          },
-          "outputs": ["{options.outputFile}"]
+            "lintFilePatterns": ["apps/example-app/**/*.{ts,tsx,js,jsx}"]
+          }
         },
         "test": {
           "builder": "@nrwl/jest:jest",
+          "outputs": ["coverage/apps/example-app"],
           "options": {
             "jestConfig": "apps/example-app/jest.config.ts",
-            "passWithNoTests": true,
-            "tsConfig": "apps/example-app/tsconfig.spec.json"
-          },
-          "outputs": ["coverage/apps/example-app"]
+            "passWithNoTests": true
+          }
         }
       },
       "tags": []
@@ -136,7 +120,7 @@
           "options": {
             "jestConfig": "libs/reshape-state/jest.config.ts",
             "passWithNoTests": true,
-            "tsConfig": "libs/reshape-state/tsconfig.spec.json"
+            "tsconfig": "libs/reshape-state/tsconfig.spec.json"
           },
           "outputs": ["coverage/libs/reshape-state"]
         },

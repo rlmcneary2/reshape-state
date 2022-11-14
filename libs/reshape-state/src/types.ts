@@ -2,7 +2,7 @@
  * An object passed to `dispatch` then sequentially to each {@link ActionHandler}.
  * @template P The type of the payload property.
  */
-export interface Action<P = any> {
+export interface Action<P = unknown> {
   /**
    * Identifies the action. Handlers use this to determine if they should
    * operate on the action.
@@ -29,7 +29,7 @@ export interface Action<P = any> {
  * second element indicates if the state has changed; if not provided it
  * defaults to false.
  */
-export interface ActionHandler<T, P = any> {
+export interface ActionHandler<T, P = unknown> {
   (state: T, action: Action<P> | LoopAction<P>, dispatch: Dispatcher<T>): [
     state: T,
     changed?: boolean
@@ -50,15 +50,16 @@ export interface CreateOptions {
 
 /**
  * Instances of a Dispatcher accept one or more tasks as parameters. Each task
- * is processed in sequence starting with the leftmost parameter. If a task is
+ * is processed in sequence starting0000 with the leftmost parameter. If a task is
  * an Action it will be passed sequentially to each {@link ActionHandler}. If a
  * task is an InlineHandler that inline handler function will be invoked.
  * @template T The type of the state object passed to each {@link ActionHandler}
  * and {@link InlineHandler}.
+ * @template P The type of the action payload {@link Action}.
  * @param tasks One or more parameters that are an Action or InlineHandler.
  */
-export interface Dispatcher<T> {
-  (...tasks: (Action | InlineHandler<T>)[]): void;
+export interface Dispatcher<T, P = unknown> {
+  (...tasks: (Action<P> | InlineHandler<T>)[]): void;
 }
 
 /**
@@ -81,7 +82,7 @@ export interface GetState<T> {
  * second element indicates if the state has changed; if not provided it
  * defaults to false.
  */
-export interface InlineHandler<T = any> {
+export interface InlineHandler<T = unknown> {
   (state: T): [state: T, changed?: boolean];
 }
 
@@ -105,7 +106,8 @@ export interface Reshaper<T> {
    * @param handlers An array of handlers that will modify state.
    * @returns The Reshaper.
    */
-  addHandlers: (handlers: ActionHandler<T>[]) => Reshaper<T>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  addHandlers: (handlers: ActionHandler<T, any>[]) => Reshaper<T>;
 
   /**
    * Add an onChange callback. Only a single callback can be passed to this
@@ -129,7 +131,8 @@ export interface Reshaper<T> {
    * @param handlers Handlers added using {@link addHandlers}.
    * @returns The Reshaper.
    */
-  removeHandlers: (handlers: ActionHandler<T>[]) => Reshaper<T>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  removeHandlers: (handlers: ActionHandler<T, any>[]) => Reshaper<T>;
 
   /**
    * Remove an onChange callback.

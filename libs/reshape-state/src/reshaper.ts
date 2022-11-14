@@ -1,4 +1,4 @@
-import { queue } from "./task-queue";
+import { queue, QueueItemResult } from "./task-queue";
 import {
   Action,
   ActionHandler,
@@ -24,51 +24,68 @@ export function create<T>(options: CreateOptions = {}): Readonly<Reshaper<T>> {
   let getState: GetState<T>;
   let missingGetStateLogged = false;
 
-  const storeInternal = {
+  const storeInternal: {
+    actionHandlers: Set<ActionHandler<T>>;
+    dispatch: Dispatcher<T>;
+    onChangeHandlers: Set<OnChange<T>>;
+  } = {
     actionHandlers: new Set<ActionHandler<T>>(),
+    dispatch: (...tasks: (Action | InlineHandler<T>)[]) => {
+      addTask(() => {
+        if (!getState) {
+          if (!missingGetStateLogged) {
+            missingGetStateLogged = true;
+            console.error(
+              "reshape-state: No GetState function exists; use `setGetState` to provide one. Ignoring this task."
+            );
+          }
+
+          const bail: QueueItemResult<void> = {
+            cancel: () => {
+              /* noop */
+            },
+            result: Promise.resolve({
+              error: new Error(
+                "No GetState function exists; use `setGetState` to provide one. Ignoring this task."
+              )
+            })
+          };
+
+          return bail;
+        } else {
+          missingGetStateLogged = false;
+        }
+
+        let nextState = getState();
+        let stateChanged = false;
+        for (const task of tasks) {
+          let loopStateChanged = false;
+          let action: Action | InlineHandler<T> | LoopAction = task;
+          do {
+            [nextState, loopStateChanged] = processTask<T>(
+              nextState,
+              action,
+              storeInternal.dispatch,
+              storeInternal.actionHandlers
+            );
+
+            stateChanged = loopStateChanged || stateChanged;
+            action = { id: null };
+          } while (loopUntilSettled && loopStateChanged);
+        }
+
+        if (stateChanged) {
+          for (const o of storeInternal.onChangeHandlers) {
+            o(nextState);
+          }
+        }
+      });
+    },
     onChangeHandlers: new Set<OnChange<T>>()
   };
 
-  ((storeInternal as any).dispatch as Dispatcher<T>) = function (
-    ...tasks: (Action | InlineHandler)[]
-  ) {
-    addTask(() => {
-      if (!getState) {
-        if (!missingGetStateLogged) {
-          missingGetStateLogged = true;
-          console.warn(
-            "reshape-state: No GetState function exists; use `setGetState` to provide one. Initial state will be undefined."
-          );
-        }
-      }
-
-      let nextState = getState();
-      let stateChanged = false;
-      for (const task of tasks) {
-        let loopStateChanged = false;
-        let action: Action | InlineHandler | LoopAction = task;
-        do {
-          [nextState, loopStateChanged] = processTask<T>(
-            nextState,
-            action,
-            (storeInternal as any).dispatch,
-            storeInternal.actionHandlers
-          );
-
-          stateChanged = loopStateChanged || stateChanged;
-          action = { id: null };
-        } while (loopUntilSettled && loopStateChanged);
-      }
-
-      if (stateChanged) {
-        for (const o of storeInternal.onChangeHandlers) {
-          o(nextState);
-        }
-      }
-    });
-  };
-
   return Object.freeze({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     addHandlers: function (handlers: ActionHandler<T>[]) {
       handlers.forEach(
         h =>
@@ -88,7 +105,7 @@ export function create<T>(options: CreateOptions = {}): Readonly<Reshaper<T>> {
       return this;
     },
 
-    dispatch: (storeInternal as any).dispatch,
+    dispatch: storeInternal.dispatch,
 
     removeHandlers: function (handlers: ActionHandler<T>[]) {
       handlers.forEach(
@@ -118,7 +135,7 @@ export function create<T>(options: CreateOptions = {}): Readonly<Reshaper<T>> {
 
 function processTask<T>(
   state: T,
-  task: Action | InlineHandler | LoopAction,
+  task: Action | InlineHandler<T> | LoopAction,
   dispatch: Dispatcher<T>,
   handlers: Set<ActionHandler<T>>
 ): [state: T, changed: boolean] {
@@ -146,7 +163,7 @@ function processTask<T>(
 }
 
 function validateResult(
-  result: [state: any, changed?: boolean],
+  result: [state: unknown, changed?: boolean],
   taskType: "ActionHandler" | "InlineHandler"
 ) {
   if (!result || !Array.isArray(result)) {

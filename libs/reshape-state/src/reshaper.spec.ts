@@ -1,12 +1,15 @@
 import { create } from "./reshaper";
-import { ActionHandler } from "./types";
+import { Action, ActionHandler } from "./types";
 
 describe("reshaper", () => {
   it("creates a reshaper", async () => {
-    const reshaper = create<any>();
+    const reshaper = create<TestState>();
+    reshaper.setGetState(() => ({}));
 
-    const handler = jest.fn(() => [true, true]);
-    reshaper.addHandlers([handler as any]);
+    const handler = jest.fn<MockHandlerResult, MockHandlerArgs>(
+      (state, action) => [{ ...state, ...action.payload }, true]
+    );
+    reshaper.addHandlers([handler as ActionHandler<TestState>]);
 
     const handleChange = jest.fn();
     reshaper.addOnChange(handleChange);
@@ -22,18 +25,20 @@ describe("reshaper", () => {
 
     expect(handler).toHaveBeenCalledTimes(1);
     expect(handleChange).toHaveBeenCalledTimes(1);
-    expect(handleChange).toHaveBeenCalledWith(true);
+    expect(handleChange).toHaveBeenCalledWith({});
   });
 
   it("no state change - no onChange", async () => {
-    const reshaper = create<any>();
+    const reshaper = create<TestState>();
 
     const state = {};
     const getState = jest.fn(() => state);
     reshaper.setGetState(getState);
 
-    const handler = jest.fn(() => [state]);
-    reshaper.addHandlers([handler as any]);
+    const handler = jest.fn<MockHandlerResult, MockHandlerArgs>(state => [
+      state
+    ]);
+    reshaper.addHandlers([handler as ActionHandler<TestState>]);
 
     const handleChange = jest.fn();
     reshaper.addOnChange(handleChange);
@@ -56,17 +61,16 @@ describe("reshaper", () => {
   });
 
   it("modifies state", async () => {
-    const reshaper = create<any>();
+    const reshaper = create<TestState>();
 
     const initialState = { foo: "bar" };
     const getState = jest.fn(() => initialState);
     reshaper.setGetState(getState);
 
-    const handler = jest.fn((state, action) => [
-      { ...state, ...action.payload },
-      true
-    ]);
-    reshaper.addHandlers([handler as any]);
+    const handler = jest.fn<MockHandlerResult, MockHandlerArgs>(
+      (state, action) => [{ ...state, ...action.payload }, true]
+    );
+    reshaper.addHandlers([handler as ActionHandler<TestState>]);
 
     const handleChange = jest.fn();
     reshaper.addOnChange(handleChange);
@@ -88,17 +92,16 @@ describe("reshaper", () => {
   });
 
   it("accepts multiple actions", async () => {
-    const reshaper = create<any>();
+    const reshaper = create<TestState>();
 
     const initialState = { foo: "bar" };
     const getState = jest.fn(() => initialState);
     reshaper.setGetState(getState);
 
-    const handler = jest.fn((state, action) => [
-      { ...state, ...action.payload },
-      true
-    ]);
-    reshaper.addHandlers([handler as any]);
+    const handler = jest.fn<MockHandlerResult, MockHandlerArgs>(
+      (state, action) => [{ ...state, ...action.payload }, true]
+    );
+    reshaper.addHandlers([handler as ActionHandler<TestState>]);
 
     const handleChange = jest.fn();
     reshaper.addOnChange(handleChange);
@@ -126,17 +129,16 @@ describe("reshaper", () => {
   });
 
   it("accepts inline handlers", async () => {
-    const reshaper = create<any>();
+    const reshaper = create<TestState>();
 
     const initialState = { foo: "bar" };
     const getState = jest.fn(() => initialState);
     reshaper.setGetState(getState);
 
-    const handler = jest.fn((state, action) => [
-      { ...state, ...action.payload },
-      true
-    ]);
-    reshaper.addHandlers([handler as any]);
+    const handler = jest.fn<MockHandlerResult, MockHandlerArgs>(
+      (state, action) => [{ ...state, ...action.payload }, true]
+    );
+    reshaper.addHandlers([handler as ActionHandler<TestState>]);
 
     const handleChange = jest.fn();
     reshaper.addOnChange(handleChange);
@@ -147,9 +149,10 @@ describe("reshaper", () => {
       });
     });
 
-    const inlineHandler = jest.fn(state => [{ ...state, fiz: "baz" }, true]);
-
-    reshaper.dispatch(inlineHandler as any);
+    const inlineHandler = jest.fn<MockHandlerResult, [TestState]>(state => {
+      return [{ ...state, fiz: "baz" }, true];
+    });
+    reshaper.dispatch(inlineHandler);
 
     await wait;
 
@@ -164,18 +167,18 @@ describe("reshaper", () => {
   });
 
   it("loops until state settles", async () => {
-    const reshaper = create<any>({
+    const reshaper = create<unknown>({
       loopUntilSettled: true
     }).setGetState(() => "fubar");
 
-    const handler = (jest
+    const handler = jest
       .fn()
       .mockReturnValueOnce(["foo", true])
-      .mockReturnValueOnce(["foo"]) as unknown) as ActionHandler<any>;
-    const handler2 = (jest
+      .mockReturnValueOnce(["foo"]);
+    const handler2 = jest
       .fn()
       .mockReturnValueOnce(["bar"])
-      .mockReturnValueOnce(["bar"]) as unknown) as ActionHandler<any>;
+      .mockReturnValueOnce(["bar"]);
     reshaper.addHandlers([handler, handler2]);
 
     let resolve: () => void;
@@ -220,3 +223,9 @@ describe("reshaper", () => {
     expect(handleChange).toHaveBeenCalledTimes(1);
   });
 });
+
+type MockHandlerArgs = [TestState, Action<Record<string, unknown>>];
+
+type MockHandlerResult = [TestState, boolean?];
+
+type TestState = Record<string, unknown>;
