@@ -9,7 +9,7 @@
       }
     ]
   },
-  "extends": ["plugin:@nrwl/nx/react", "../../.eslintrc"],
+  "extends": ["../../.eslintrc"],
   "ignorePatterns": ["!**/*"],
   "overrides": [
     {
@@ -18,7 +18,9 @@
     },
     {
       "files": ["*.ts", "*.tsx"],
-      "rules": {}
+      "rules": {
+        "@typescript-eslint/no-empty-function": "off"
+      }
     },
     {
       "files": ["*.js", "*.jsx"],

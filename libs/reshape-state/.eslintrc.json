@@ -9,7 +9,7 @@
       }
     ]
   },
-  "extends": ["plugin:@nrwl/nx/react", "../../.eslintrc"],
+  "extends": ["../../.eslintrc"],
   "ignorePatterns": ["!**/*"],
   "overrides": [
     {

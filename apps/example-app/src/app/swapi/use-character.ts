@@ -4,9 +4,10 @@ import { Context } from "./character-context";
 
 const { useContext, useEffect, useMemo, useState } = React;
 
-export default function useCharacter<T>(
-  selector?: (state: State) => T
-): { getPerson: (id: number) => void; value?: T } {
+export default function useCharacter<T>(selector?: (state: State) => T): {
+  getPerson: (id: number) => void;
+  value?: T;
+} {
   const { addOnChange, getPerson, removeOnChange } = useContext(Context);
   const [selected, setSelected] = useState<T>();
 
