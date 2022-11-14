@@ -27,20 +27,22 @@ export function queue() {
     setTimeout(() => processTaskQueueValues(), 0);
   }
 
-  return function queueItem<T, CancelData = void>(task: Task<T>): TaskResult<T, CancelData> {
-    let resolveTask: PromiseResolver<T, CancelData>;
-    const result = new Promise<T | CancelData>(res => (resolveTask = res));
+  return function queueItem<T>(task: Task<T>): QueueItemResult<T> {
+    let resolveTask: PromiseResolver<TaskResult<T>>;
+    const result = new Promise<TaskResult<T>>(res => (resolveTask = res));
     let canceled = false;
 
     const queuedItem = async () => {
-      let r: any;
+      let r: Awaited<T>;
       try {
         r = await Promise.resolve(task());
       } catch (err) {
         console.error("Error processing task.", err);
+        resolveTask({ error: err });
+        return;
       }
 
-      !canceled && resolveTask(r);
+      !canceled && resolveTask({ taskResult: r });
     };
 
     taskQueue.add(queuedItem);
@@ -50,10 +52,10 @@ export function queue() {
     }, 0);
 
     return {
-      cancel: (data: CancelData) => {
+      cancel: () => {
         canceled = true;
         taskQueue.delete(queuedItem);
-        resolveTask(data);
+        resolveTask({ cancel: true });
       },
       result
     };
@@ -62,9 +64,28 @@ export function queue() {
 
 export type Task<T> = () => T;
 
-export interface TaskResult<T, CancelData = void> {
-  cancel: (data: CancelData) => void;
-  result: Promise<T | CancelData>;
-};
+export interface QueueItemResult<T> {
+  cancel: () => void;
+  result: Promise<TaskResult<T>>;
+}
 
-type PromiseResolver<T, CancelData = void> = (value: T | PromiseLike<T> | CancelData) => void;
+export type TaskResult<T> =
+  | TaskSuccessResult<T>
+  | TaskCancelResult
+  | TaskErrorResult;
+
+export interface TaskSuccessResult<T> {
+  taskResult: T;
+}
+
+export interface TaskCancelResult
+  extends Omit<TaskSuccessResult<void>, "taskResult"> {
+  cancel: true;
+}
+
+export interface TaskErrorResult
+  extends Omit<TaskSuccessResult<void>, "taskResult"> {
+  error: unknown;
+}
+
+type PromiseResolver<T> = (value: T | PromiseLike<T>) => void;

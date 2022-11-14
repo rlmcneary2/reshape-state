@@ -3,7 +3,9 @@ import { queue } from "./task-queue";
 describe("task-queue", () => {
   it("runs a task", async () => {
     const val = await queue()(() => 1 + 1).result;
-    expect(val).toBe(2);
+    expect(val).toEqual({
+      taskResult: 2
+    });
   });
 
   it("runs an async task", async () => {
@@ -12,7 +14,9 @@ describe("task-queue", () => {
     );
 
     const val = await result;
-    expect(val).toBe("completed");
+    expect(val).toEqual({
+      taskResult: "completed"
+    });
   });
 
   it("cancels a task", async () => {
@@ -24,7 +28,9 @@ describe("task-queue", () => {
 
     cancel();
     const val = await result;
-    expect(val).toBeUndefined();
+    expect(val).toEqual({
+      cancel: true
+    });
   });
 
   it("catches a task error", async () => {
@@ -33,7 +39,9 @@ describe("task-queue", () => {
     });
 
     const val = await result;
-    expect(val).toBeUndefined();
+    expect(val).toEqual({
+      error: expect.anything()
+    });
   });
 
   it("processes tasks in order", async () => {
@@ -43,7 +51,8 @@ describe("task-queue", () => {
     );
     const { result: resultSync } = addTask(() => 1 + 1);
     const val = await Promise.race([result, resultSync]);
-    expect(typeof val).toBe("boolean");
-    expect(val).toBe(true);
+    expect(val).toEqual({
+      taskResult: true
+    });
   });
 });
