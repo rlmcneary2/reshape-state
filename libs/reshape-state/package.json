@@ -1,4 +1,18 @@
 {
+  "author": "Richard L. McNeary II",
+  "bugs": "https://github.com/rlmcneary2/reshape-state/issues",
+  "description": "A small state management library. Use a reshaper to manage the acquisition of data for a state object from multiple asynchronous sources.",
+  "homepage": "https://limnous.com/reshape-state/",
+  "keywords": [
+    "state",
+    "state management",
+    "react"
+  ],
+  "license": "MIT",
   "name": "reshape-state",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rlmcneary2/reshape-state.git"
+  },
   "version": "1.4.0"
 }
