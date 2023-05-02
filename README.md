@@ -30,14 +30,11 @@ Documents the logic implemented to process the Actions in the task-queue.
 ```mermaid
 %%{ init: { "flowchart": { "curve": "linear" } } }%%
 flowchart TD
-   classDef asyncNode stroke:#F00;
-   classDef endNode color:#FFF,fill:#000,stroke:#000
    subgraph addTask[Add Task]
       direction LR
       start[["dispatch(Action)"]]-->
       addAction[add Action to<br/>task-queue]-->
       firstTimeout["setTimeout()<br/>to process<br/>the next task"]-.->|<i>async</i>| isActive{is active?}
-      linkStyle 2 stroke:#F00,stroke-width:4px
       isActive-->|yes| isActiveYes([Exit])
       isActive-->|no| isActiveNo[set active = true]
    end
@@ -68,8 +65,12 @@ flowchart TD
       isMoreActionsNo-->noMoreActions([Done])
       isMoreActions-->|yes| secondTimeout["setTimeout()<br/>to process<br/>the next task"]
       secondTimeout-.->|<i>async</i>| getTask
-      linkStyle 24 stroke:#F00,stroke-width:4px
    end
+
+   classDef asyncNode stroke:#F00;
+   classDef endNode color:#FFF,fill:#000,stroke:#000
    class firstTimeout,secondTimeout asyncNode
    class isActiveYes,noMoreActions endNode
-   ```
+   linkStyle 2 stroke:#F00,stroke-width:4px
+   linkStyle 24 stroke:#F00,stroke-width:4px
+```
