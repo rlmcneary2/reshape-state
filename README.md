@@ -30,41 +30,60 @@ Documents the logic implemented to process the Actions in the task-queue.
 ```mermaid
 %%{ init: { "flowchart": { "curve": "linear" } } }%%
 flowchart TD
-   subgraph addTask[Add Task]
-      direction LR
-      start[["dispatch(Action)"]]-->
-      addAction[add Action to<br/>task-queue]-->
-      firstTimeout["setTimeout()<br/>to process<br/>the next task"]-.->|<i>async</i>| isActive{is active?}
-      isActive-->|yes| isActiveYes([Exit])
-      isActive-->|no| isActiveNo[set active = true]
+   isActiveYes([Exit])
+   start[["dispatch(Action)"]]
+   addAction[add Action to<br/>task-queue]
+   firstTimeout["setTimeout()<br/>to process<br/>the next task"]
+   isActive{is active?}
+   isActiveNo[set active = true]
+
+   loopAction[/Action=null<br/>State=next State/]
+   invokeInline[invoke <br/>InlineHandler]
+   getAction[get oldest<br/>Action from<br/>task-queue]
+   getState["getState()"]
+   isActionInlineHandler{is Action an<br/>InlineHandler}
+   isStateChanged{was state<br/>changed?}
+   isLoopUntilSettled{is<br/>loopUntilSettled<br/>true?}
+   onChange["onChange(State)"]
+   invokeActionHandler[invoke<br/>ActionHandler]
+   isAnotherActionHandler{is there another<br/>ActionHandler?}
+   nextAction[/State=next State/]
+
+   isMoreActions{more Actions<br/>in the<br/>task-queue?}
+   isMoreActionsNo[Set active=false]
+   noMoreActions([Done])
+   secondTimeout["setTimeout()<br/>to process<br/>the next task"]
+   
+   subgraph finished[Finished?]
+      isMoreActions-->|no| isMoreActionsNo
+      isMoreActionsNo-->noMoreActions
+      isMoreActions-->|yes| secondTimeout
    end
    subgraph processAction[Process Action]
-      direction LR
-      isActiveNo-->getTask
-      getTask[get oldest<br/>Action from<br/>task-queue]-->
-      getState["getState()"]-->
-      isInline{is Action an<br/>InlineHandler}-->|no| invokeActionHandler[invoke<br/>ActionHandler]
-
-      invokeActionHandler-->isAnotherAction{is there another<br/>ActionHandler?}
-      isAnotherAction-->|yes| nextAction[/State=next State/]
+      getAction-->getState
+      loopAction-->isActionInlineHandler
+      getState-->isActionInlineHandler
+      isLoopUntilSettled-->|yes| loopAction
+      isActionInlineHandler-->|yes| invokeInline
+      isActionInlineHandler-->|no| invokeActionHandler
+      invokeActionHandler-->isAnotherActionHandler
+      isAnotherActionHandler-->|no| isStateChanged
+      isStateChanged-->|yes| isLoopUntilSettled
+      invokeInline-->isStateChanged
+      isAnotherActionHandler-->|yes| nextAction
       nextAction-->invokeActionHandler
-      isAnotherAction-->|no| isStateChanged
-
-      isInline-->|yes| invokeInline[invoke <br/>InlineHandler]
-      invokeInline-->isStateChanged{was state<br/>changed?}
-      isStateChanged-->|yes| isLoopUntilSettled{is<br/>loopUntilSettled<br/>true?}
-      isLoopUntilSettled-->|yes| loopAction[/Action=null<br/>State=next State/]
-      loopAction-->isInline
-      isLoopUntilSettled-->|no| onChange["onChange(State)"]
-   end
-   subgraph finished[Finished?]
-      direction LR
-      isStateChanged-->|no| isMoreActions{more Actions<br/>in the<br/>task-queue?}
+      isLoopUntilSettled-->|no| onChange
       onChange-->isMoreActions
-      isMoreActions-->|no| isMoreActionsNo[Set active=false]
-      isMoreActionsNo-->noMoreActions([Done])
-      isMoreActions-->|yes| secondTimeout["setTimeout()<br/>to process<br/>the next task"]
-      secondTimeout-.->|<i>async</i>| getTask
+      isStateChanged-->|no| isMoreActions
+      secondTimeout-.->|<i>async</i>| getAction
+   end
+   subgraph addTask[Start]
+      start-->addAction
+      addAction-->firstTimeout
+      firstTimeout-.->|<i>async</i>| isActive
+      isActive-->|yes| isActiveYes
+      isActive-->|no| isActiveNo
+      isActiveNo-->getAction
    end
 
    classDef asyncNode stroke:#F00;
