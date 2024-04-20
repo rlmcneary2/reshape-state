@@ -3,6 +3,7 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/reshape-state/src",
   "projectType": "library",
+  "tags": [],
   "targets": {
     "build": {
       "executor": "@nx/rollup:rollup",
@@ -20,15 +21,13 @@
           }
         ],
         "babelConfig": "@nx/react/plugins/bundle-babel",
-        "buildableProjectDepsInPackageJsonType": "dependencies",
         "entryFile": "libs/reshape-state/src/index.ts",
         "format": ["esm"],
         "outputPath": "dist/libs/reshape-state",
         "project": "libs/reshape-state/package.json",
         "rollupConfig": "libs/reshape-state/rollup.config.js",
         "tsConfig": "libs/reshape-state/tsconfig.lib.json",
-        "babelUpwardRootMode": true,
-        "updateBuildableProjectDepsInPackageJson": true
+        "babelUpwardRootMode": true
       },
       "outputs": ["{options.outputPath}"]
     },
@@ -42,7 +41,7 @@
       "outputs": ["{workspaceRoot}/coverage/libs/reshape-state"]
     },
     "lint": {
-      "executor": "@nx/linter:eslint",
+      "executor": "@nx/eslint:lint",
       "options": {
         "lintFilePatterns": [
           "libs/reshape-state/**/*.js",
@@ -58,6 +57,5 @@
       },
       "outputs": ["{options.outputFile}"]
     }
-  },
-  "tags": []
+  }
 }
