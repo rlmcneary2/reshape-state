@@ -35,26 +35,12 @@
       "executor": "@nx/jest:jest",
       "options": {
         "jestConfig": "libs/reshape-state/jest.config.ts",
-        "passWithNoTests": true,
         "tsconfig": "libs/reshape-state/tsconfig.spec.json"
       },
       "outputs": ["{workspaceRoot}/coverage/libs/reshape-state"]
     },
     "lint": {
       "executor": "@nx/eslint:lint",
-      "options": {
-        "lintFilePatterns": [
-          "libs/reshape-state/**/*.js",
-          "libs/reshape-state/**/*.jsx",
-          "libs/reshape-state/**/*.ts",
-          "libs/reshape-state/**/*.tsx",
-          "libs/reshape-state/**/*.spec.ts",
-          "libs/reshape-state/**/*.spec.tsx",
-          "libs/reshape-state/**/*.spec.js",
-          "libs/reshape-state/**/*.spec.jsx",
-          "libs/reshape-state/**/*.d.ts"
-        ]
-      },
       "outputs": ["{options.outputFile}"]
     }
   }
