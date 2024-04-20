@@ -2,7 +2,7 @@
 export default {
   preset: "../../jest.preset.js",
   transform: {
-    "^(?!.*\\.(js|jsx|ts|tsx|css|json)$)": "@nrwl/react/plugins/jest",
+    "^(?!.*\\.(js|jsx|ts|tsx|css|json)$)": "@nx/react/plugins/jest",
     "^.+\\.[tj]sx?$": ["ts-jest", { tsconfig: "<rootDir>/tsconfig.spec.json" }]
   },
   moduleFileExtensions: ["ts", "tsx", "js", "jsx", "html"],

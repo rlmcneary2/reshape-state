@@ -5,7 +5,7 @@
   "projectType": "library",
   "targets": {
     "build": {
-      "executor": "@nrwl/rollup:rollup",
+      "executor": "@nx/rollup:rollup",
       "options": {
         "assets": [
           {
@@ -19,19 +19,21 @@
             "output": "."
           }
         ],
-        "babelConfig": "@nrwl/react/plugins/bundle-babel",
+        "babelConfig": "@nx/react/plugins/bundle-babel",
         "buildableProjectDepsInPackageJsonType": "dependencies",
         "entryFile": "libs/reshape-state/src/index.ts",
         "format": ["esm"],
         "outputPath": "dist/libs/reshape-state",
         "project": "libs/reshape-state/package.json",
         "rollupConfig": "libs/reshape-state/rollup.config.js",
-        "tsConfig": "libs/reshape-state/tsconfig.lib.json"
+        "tsConfig": "libs/reshape-state/tsconfig.lib.json",
+        "babelUpwardRootMode": true,
+        "updateBuildableProjectDepsInPackageJson": true
       },
       "outputs": ["{options.outputPath}"]
     },
     "test": {
-      "executor": "@nrwl/jest:jest",
+      "executor": "@nx/jest:jest",
       "options": {
         "jestConfig": "libs/reshape-state/jest.config.ts",
         "passWithNoTests": true,
@@ -40,7 +42,7 @@
       "outputs": ["{workspaceRoot}/coverage/libs/reshape-state"]
     },
     "lint": {
-      "executor": "@nrwl/linter:eslint",
+      "executor": "@nx/linter:eslint",
       "options": {
         "lintFilePatterns": [
           "libs/reshape-state/**/*.js",
